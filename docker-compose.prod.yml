@@ -1,0 +1,163 @@
+name: portfolio-next
+
+services:
+  gateway:
+    image: nginx:1.27-alpine
+    container_name: portfolio-next-gateway
+    restart: unless-stopped
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./gateway/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      frontend:
+        condition: service_healthy
+    networks:
+      - portfolio-network
+      - proxy-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/gateway-health | grep -q '^ok$'"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      target: prod
+    restart: unless-stopped
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+      STRAPI_INTERNAL_URL: http://strapi:1337
+      STRAPI_API_TOKEN: ${STRAPI_API_TOKEN:-}
+      CHATBOT_INTERNAL_URL: http://chatbot_backend:8001
+      BACKEND_TIMEOUT_MS: ${BACKEND_TIMEOUT_MS:-30000}
+      CHAT_RATE_LIMIT_ENABLED: ${CHAT_RATE_LIMIT_ENABLED:-true}
+      CHAT_RATE_LIMIT_REQUESTS_PER_MINUTE: ${CHAT_RATE_LIMIT_REQUESTS_PER_MINUTE:-5}
+      CHAT_RATE_LIMIT_BURST: ${CHAT_RATE_LIMIT_BURST:-3}
+      CHAT_RATE_LIMIT_TRUST_PROXY_HEADERS: ${CHAT_RATE_LIMIT_TRUST_PROXY_HEADERS:-true}
+    depends_on:
+      chatbot_backend:
+        condition: service_healthy
+      strapi:
+        condition: service_healthy
+    networks:
+      portfolio-network:
+        aliases:
+          - frontend
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:5173/"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  chatbot_backend:
+    build:
+      context: ./chatbot_backend
+    restart: unless-stopped
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY:?GROQ_API_KEY is required}
+      GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-120b}
+      GROQ_TEMPERATURE: ${GROQ_TEMPERATURE:-0.1}
+      GROQ_TIMEOUT_SECONDS: ${GROQ_TIMEOUT_SECONDS:-25}
+      GROQ_MAX_CONCURRENT_REQUESTS: ${GROQ_MAX_CONCURRENT_REQUESTS:-2}
+      GROQ_QUEUE_TIMEOUT_SECONDS: ${GROQ_QUEUE_TIMEOUT_SECONDS:-5}
+      PROMPT_GUARD_ENABLED: ${PROMPT_GUARD_ENABLED:-true}
+      PROMPT_GUARD_PRIMARY_MODEL: ${PROMPT_GUARD_PRIMARY_MODEL:-meta-llama/llama-prompt-guard-2-86m}
+      PROMPT_GUARD_FALLBACK_MODEL: ${PROMPT_GUARD_FALLBACK_MODEL:-meta-llama/llama-prompt-guard-2-22m}
+      PROMPT_GUARD_TIMEOUT_SECONDS: ${PROMPT_GUARD_TIMEOUT_SECONDS:-3}
+      PROMPT_GUARD_MALICIOUS_THRESHOLD: ${PROMPT_GUARD_MALICIOUS_THRESHOLD:-0.5}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-sentence-transformers/all-MiniLM-L6-v2}
+      HF_HOME: /app/.cache/huggingface
+      CHAT_STRUCTURED_OUTPUT: ${CHAT_STRUCTURED_OUTPUT:-true}
+      CHAT_DEBUG_LOG: ${CHAT_DEBUG_LOG:-false}
+      KB_DIR: /app/kb_faiss
+      KB_TOP_K: ${KB_TOP_K:-4}
+      KB_MIN_SCORE: ${KB_MIN_SCORE:-0.2}
+    volumes:
+      - ./kb_faiss:/app/kb_faiss:ro
+      - chatbot_hf_cache:/app/.cache/huggingface
+    networks:
+      - portfolio-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=3)",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  strapi:
+    build:
+      context: ./cms/strapi
+      target: prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 1337
+      PUBLIC_URL: ${STRAPI_PUBLIC_URL:-https://cms.vloth.tech}
+      APP_KEYS: ${STRAPI_APP_KEYS:?STRAPI_APP_KEYS is required}
+      API_TOKEN_SALT: ${STRAPI_API_TOKEN_SALT:?STRAPI_API_TOKEN_SALT is required}
+      ADMIN_JWT_SECRET: ${STRAPI_ADMIN_JWT_SECRET:?STRAPI_ADMIN_JWT_SECRET is required}
+      TRANSFER_TOKEN_SALT: ${STRAPI_TRANSFER_TOKEN_SALT:?STRAPI_TRANSFER_TOKEN_SALT is required}
+      JWT_SECRET: ${STRAPI_JWT_SECRET:?STRAPI_JWT_SECRET is required}
+      ENCRYPTION_KEY: ${STRAPI_ENCRYPTION_KEY:?STRAPI_ENCRYPTION_KEY is required}
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${STRAPI_DATABASE_NAME:-strapi}
+      DATABASE_USERNAME: ${STRAPI_DATABASE_USERNAME:-strapi}
+      DATABASE_PASSWORD: ${STRAPI_DATABASE_PASSWORD:?STRAPI_DATABASE_PASSWORD is required}
+      DATABASE_SSL: ${STRAPI_DATABASE_SSL:-false}
+    volumes:
+      - strapi_uploads:/opt/app/public/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - portfolio-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:1337/admin').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${STRAPI_DATABASE_NAME:-strapi}
+      POSTGRES_USER: ${STRAPI_DATABASE_USERNAME:-strapi}
+      POSTGRES_PASSWORD: ${STRAPI_DATABASE_PASSWORD:?STRAPI_DATABASE_PASSWORD is required}
+    volumes:
+      - strapi_postgres_data:/var/lib/postgresql/data
+    networks:
+      - portfolio-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+networks:
+  portfolio-network:
+  proxy-network:
+    external: true
+
+volumes:
+  strapi_postgres_data:
+  strapi_uploads:
+  chatbot_hf_cache:

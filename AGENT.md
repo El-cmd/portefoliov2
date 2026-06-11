@@ -2,417 +2,240 @@
 
 ## Purpose
 
-This repository is a multi-service portfolio workspace with three active product surfaces:
+This repository is a Docker Compose portfolio workspace with:
 
-- `frontend/`: React + Vite + Tailwind portfolio UI
-- `backend/`: FastAPI chatbot backend using Groq + local RAG
-- `cms/strapi/`: Strapi CMS backed by PostgreSQL for editable portfolio content
+- `frontend/`: main Next.js portfolio frontend
+- `gateway/`: Nginx reverse proxy and the only published local HTTP entry point
+- `cms/strapi/`: Strapi CMS backed by PostgreSQL
+- `chatbot_backend/`: optional FastAPI/Groq chatbot backend with FAISS RAG and local all-MiniLM embeddings
+- `kb/`: local chatbot Markdown sources, intentionally not versioned
+- `kb_faiss/`: generated FAISS artifacts deployed to runtime environments
 
-The project is primarily developed through Docker Compose from the repository root.
+The old Vite frontend was replaced by the former `frontend-test` Next.js app. There is no active `frontend-test` service anymore.
 
----
-
-## High-Level Architecture
+## Architecture
 
 ### Frontend
 
-- Stack: React, React Router, Vite, Tailwind v4
-- Entry points:
-  - `frontend/src/main.tsx`
-  - `frontend/src/App.tsx`
-- Shared layout:
-  - `frontend/src/layouts/AppShell.tsx`
-- Main routes:
-  - `/` -> `HomePage`
-  - `/projects` -> `ProjectsPage`
-  - `/about` -> `AboutPage`
-  - `/chat` -> `ChatPage`
-  - `/contact` -> `ContactPage`
+- Stack: Next.js 16 app router, React 19, Tailwind CSS
+- Public dev URL through Nginx: `http://localhost:8080`
+- Internal Docker URL: `http://frontend:5173`
+- Main UI: `frontend/app/page.tsx`
+- Layout and metadata: `frontend/app/layout.tsx`
+- Strapi API route: `frontend/app/api/projects/route.ts`
+- Strapi types/helpers: `frontend/lib/strapi.ts`
+- Next rewrites: `frontend/next.config.mjs`
 
-### CMS
+Current navigation model:
 
-- Stack: Strapi v5 + PostgreSQL 16
-- Admin URL: `http://localhost:1337/admin`
-- Public API base: `http://localhost:1337/api`
-- Docker service names:
-  - `strapi`
-  - `postgres`
+- horizontal rail with `HUB`, `Home`, and `About`
+- vertical scroll from `Home` to the chatbot UI
+- annex pages like `HUB` and `About` should not scroll down into chatbot
 
-### Chatbot backend
+### Strapi
 
-- Stack: FastAPI + Groq + FAISS + `sentence-transformers`
-- Base URL in dev: `http://localhost:8001`
-- Main endpoint:
-  - `POST /chat`
-- Health:
-  - `GET /health`
+- Admin URL through Nginx: `http://cms.localhost:8080/admin`
+- Internal Docker URL used by frontend: `http://strapi:1337`
+- Strapi is not directly published on the host.
+- Database service: `postgres`
 
----
+### Backend
 
-## Root Commands
+- FastAPI service on internal port `8001`; it is not published on the host.
+- Main endpoint: `POST /chat`
+- Health endpoint: `GET /health`
+- Requires FAISS files in `kb_faiss/` to start successfully.
+- Query vectorization uses the local `EMBEDDING_MODEL`; default is `sentence-transformers/all-MiniLM-L6-v2`.
 
-All orchestration is driven from the root `Makefile`.
+## Commands
 
-Important targets:
+Run from repository root.
 
-- `make up`: start all services
-- `make up-frontend`: start frontend only
-- `make up-chatbot`: start chatbot backend only
-- `make up-strapi`: start Strapi only
-- `make up-front-cms`: start PostgreSQL, wait for health, then start frontend + Strapi
-- `make up-build`: rebuild and start all services
-- `make up-build-front-cms`: rebuild and start frontend + Strapi stack
-- `make down`: stop and remove containers
-- `make logs`: tail logs for frontend, backend, strapi, postgres
-- `make build`: build backend + frontend + frontend-prod + strapi
-- `make build-no-chatbot`: build frontend images only
-- `make build-strapi`: build Strapi only
+```bash
+make up                 # start all non-profile services
+make up-gateway         # start the Nginx gateway only
+make up-frontend        # start frontend only, no dependencies
+make up-front-cms       # start PostgreSQL, wait for health, then frontend + Strapi
+make up-front-cms-stable # build Strapi admin, then start frontend + Strapi without hot-reload develop mode
+make up-strapi          # start Strapi
+make up-chatbot         # start chatbot_backend only
+make up-build           # rebuild and start all non-profile services
+make up-build-front-cms # rebuild and start frontend + Strapi stack
+make stop               # stop all services
+make stop-front-cms     # stop frontend + Strapi + PostgreSQL
+make down               # docker compose down --remove-orphans
+make logs               # tail gateway/frontend/chatbot_backend/strapi/postgres logs
+make build              # build chatbot_backend + frontend + frontend-prod + strapi
+make build-no-chatbot   # build frontend images only
+make build-kb           # build local FAISS index using all-MiniLM
+```
 
-Important implementation detail:
+The Makefile intentionally uses `COMPOSE_BAKE=false docker compose`.
 
-- The Makefile uses `COMPOSE_BAKE=false docker compose ...`
-- Keep that unless the local Docker Compose / buildx issue is explicitly resolved
+## Docker Services
 
----
+### `gateway`
 
-## Docker Service Map
-
-Defined in `docker-compose.yml`.
+- Publishes `${GATEWAY_PORT:-8080}:80`
+- Routes the default host to Next.js.
+- Routes `cms.localhost` to Strapi.
+- Applies an 8 KiB body limit and Nginx rate limiting to `/api/chat`.
+- Overwrites forwarded client IP headers before proxying.
 
 ### `frontend`
 
-- Dev server on `5173`
-- Mounts local source into `/app`
-- Depends on `backend` and `strapi`
-- Uses Vite proxy environment variables:
-  - `VITE_BACKEND_PROXY_URL=http://backend:8001`
-  - `VITE_STRAPI_PROXY_URL=http://strapi:1337`
+- Builds `./frontend`, target `dev`
+- Exposes internal port `5173`; no host port is published.
+- Mounts:
+  - `./frontend:/app`
+  - `frontend_node_modules:/app/node_modules`
+  - `frontend_next:/app/.next`
+- Uses:
+  - `STRAPI_INTERNAL_URL=http://strapi:1337`
+  - `STRAPI_API_TOKEN=${STRAPI_API_TOKEN:-}`
 
 ### `frontend-prod`
 
-- Nginx-served production build on `8080`
-- Uses `frontend/docker/nginx/default.conf`
-
-### `backend`
-
-- FastAPI service on `8001`
-- Mounts `./kb` read-only into `/app/kb`
-
-### `postgres`
-
-- Persistent data volume: `strapi_postgres_data`
-- Healthcheck required before `strapi` starts cleanly
+- Profile: `prod`
+- Builds `./frontend`, target `prod`
+- Exposes internal port `5173` and uses the `frontend` network alias for `gateway-prod`.
 
 ### `strapi`
 
-- Dev mode on `1337`
-- Mounts local Strapi app into `/opt/app`
-- Persistent volumes:
-  - `strapi_node_modules`
-  - `strapi_uploads`
+- Exposes internal port `1337`; no host port is published.
+- Depends on healthy `postgres`
+- Uses persistent volumes for node modules and uploads.
+- Default command is controlled by `STRAPI_COMMAND`.
+- Normal dev mode uses `npm run develop`.
+- Stable admin mode uses `STRAPI_COMMAND="npm run build && npm run start"` via `make up-front-cms-stable`.
 
----
+### `chatbot_backend`
 
-## Frontend Content Model
+- Exposes internal port `8001`; no host port is published.
+- Mounts `./kb_faiss:/app/kb_faiss:ro`
+- Uses local SentenceTransformers embeddings at runtime; the FAISS index must be built with the same `EMBEDDING_MODEL`.
 
-There are two distinct content sources in the frontend:
+## Strapi Project Model
 
-### Static site copy
+Current content type:
 
-Stored in:
-
-- `frontend/src/data/portfolio.ts`
-- `frontend/src/lib/i18n.ts`
-
-Use these files when changing:
-
-- navbar labels
-- hero/about/contact/chat copy
-- UI labels and button text
-- language-specific strings
-
-Current navigation label detail:
-
-- the `/projects` tab is displayed as `Hub`
-- route is still `/projects`
-
-### CMS-driven project cards
-
-`ProjectsPage` no longer uses hardcoded project cards.
-
-Relevant files:
-
-- `frontend/src/pages/ProjectsPage.tsx`
-- `frontend/src/lib/strapi.ts`
-- `frontend/src/types/strapi.ts`
-
-Flow:
-
-- frontend requests `/cms/projects?populate=media&sort=date:desc`
-- Vite rewrites `/cms/*` to Strapi `/api/*`
-- media files are served through `/uploads/*`
-
-Do not change `ProjectsPage` assuming local fake data is still the source of truth. For project cards, Strapi is the source of truth.
-
----
-
-## Strapi Model
-
-The current CMS content type is:
-
-- `Project`
-
-Schema file:
-
-- `cms/strapi/src/api/project/content-types/project/schema.json`
+```text
+cms/strapi/src/api/project/content-types/project/schema.json
+```
 
 Fields:
 
 - `name`: string, required
-- `media`: single media, image or video
-- `git_url`: string
-- `project_url`: string
+- `media`: single image or video
+- `git_url`: GitHub/project source URL
+- `project_url`: live project URL
 - `description`: text
-- `date`: date
+- `date`: project date
 
-Important Strapi behavior:
+`draftAndPublish` is enabled. A project must be published to appear in frontend queries.
 
-- `draftAndPublish` is enabled
-- saving is not enough; a project must be published to appear in public queries
+## Frontend/Strapi Flow
 
-For the frontend to read projects:
+The browser does not call Strapi directly for projects.
 
-1. open `Settings`
-2. go to `Users & Permissions Plugin -> Roles -> Public`
-3. enable `find` and `findOne` for `Project`
-4. save
+Flow:
 
-If those permissions are missing:
+```text
+frontend page -> /api/projects -> Strapi /api/projects?populate=media&sort=date:desc
+```
 
-- frontend project requests return `403`
-- `ProjectsPage` shows an error state
+The server route is:
 
----
+```text
+frontend/app/api/projects/route.ts
+```
 
-## Frontend Proxy Behavior
+It uses:
 
-Development proxy configuration lives in:
+- `STRAPI_INTERNAL_URL` for the Strapi base URL
+- `STRAPI_API_TOKEN` as optional server-side bearer token
 
-- `frontend/vite.config.ts`
+Media URLs from Strapi are rendered through `/uploads/...`. `frontend/next.config.mjs` rewrites `/uploads/*` to Strapi.
 
-Current proxy rules:
+If Public permissions are open:
 
-- `/api` -> backend `http://backend:8001`
-- `/cms` -> Strapi `http://strapi:1337/api`
-- `/uploads` -> Strapi `http://strapi:1337/uploads`
+- no token is required
 
-Production proxy configuration lives in:
+If Public permissions are closed:
 
-- `frontend/docker/nginx/default.conf`
+- create a Strapi read-only API token
+- put it in root `.env` as `STRAPI_API_TOKEN=...`
 
-If a frontend call fails, verify whether the failing path is:
+Do not put `STRAPI_API_TOKEN` in client-side `NEXT_PUBLIC_*` variables.
 
-- `/api/...` -> chatbot backend issue
-- `/cms/...` -> Strapi API issue
-- `/uploads/...` -> Strapi media issue
+## Validation
 
----
-
-## Chatbot Backend Notes
-
-Key files:
-
-- `backend/app/main.py`
-- `backend/app/services/rag_service.py`
-- `backend/app/services/groq_client.py`
-- `backend/app/services/prompt_loader.py`
-- `backend/app/core/config.py`
-
-Startup behavior:
-
-- on FastAPI startup, the app loads:
-  - system prompt
-  - RAG resources
-
-Critical requirement:
-
-- the backend expects FAISS artifacts to exist in `kb/`
-- required files:
-  - `kb/kb.index.faiss`
-  - `kb/kb.index.meta.json`
-
-If they are missing, backend startup fails with a `FAISS index not found` runtime error.
-
-That failure is not a frontend bug; it is a missing RAG build artifact.
-
-Heavy backend dependencies:
-
-- `sentence-transformers`
-- `faiss-cpu`
-- `numpy`
-
-This is the main reason backend image builds are slow.
-
----
-
-## Known Stability / Dev Issues
-
-### 1. Browser cache or extension noise on Vite dev
-
-Observed behavior:
-
-- main browser profile may show a white page
-- private window works
-- clearing site data fixes it
-
-Typical symptoms:
-
-- `@react-refresh` aborted
-- `NS_BINDING_ABORTED`
-- MetaMask / SES / lockdown logs in browser console
-
-Interpretation:
-
-- this is usually a browser-profile or extension issue
-- it is not evidence that Strapi or the database is broken
-
-Mitigations already in code:
-
-- global frontend error boundary
-- lazy route loading
-- safer `localStorage` access
-- `IntersectionObserver` fallback
-
-### 2. Strapi media streaming `ECONNRESET` / `EPIPE`
-
-Observed on MP4 hover preview requests.
-
-Meaning:
-
-- browser interrupted a partial media request
-- normal during video preview behavior
-
-Mitigation already added:
-
-- `cms/strapi/src/index.js` filters expected disconnect errors so logs stay cleaner
-
-### 3. Frontend proxy race during Strapi restart
-
-If `strapi` restarts while frontend is already up, Vite may log proxy errors like:
-
-- `connect ECONNREFUSED ...:1337`
-
-This is transient unless the service stays down.
-
----
-
-## Where to Edit What
-
-### Change navbar / site labels / static copy
-
-- `frontend/src/data/portfolio.ts`
-- `frontend/src/lib/i18n.ts`
-
-### Change project cards data
-
-- in Strapi admin
-- not in `portfolio.ts`
-
-### Change project card rendering
-
-- `frontend/src/pages/ProjectsPage.tsx`
-- `frontend/src/lib/strapi.ts`
-- `frontend/src/types/strapi.ts`
-
-### Change chatbot behavior
-
-- `backend/app/main.py`
-- `backend/app/services/*`
-- `backend/app/prompts/system.yaml`
-- `kb/*.md`
-
-### Change Strapi schema
-
-- `cms/strapi/src/api/project/content-types/project/schema.json`
-
-If schema changes affect public frontend rendering, update:
-
-- `frontend/src/types/strapi.ts`
-- `frontend/src/lib/strapi.ts`
-- `frontend/src/pages/ProjectsPage.tsx`
-
----
-
-## Validation Checklist After Changes
-
-### Frontend-only changes
-
-Run:
+Frontend-only:
 
 ```bash
 cd frontend
 npm run build
 ```
 
-### Strapi/frontend integration changes
+Compose config:
 
-Run:
+```bash
+docker compose config --quiet
+```
+
+Frontend + CMS:
 
 ```bash
 make up-front-cms
 ```
 
-Then verify:
+Check:
 
-- `http://localhost:1337/admin`
-- `http://localhost:5173/projects`
-- `http://localhost:5173/cms/projects?populate=media&sort=date:desc`
+- `http://localhost:8080`
+- `http://localhost:8080/api/projects`
+- `http://cms.localhost:8080/admin`
 
-### Chatbot/backend changes
+## Known Issues
 
-Run:
+### Backend FAISS startup failure
 
-```bash
-make up-chatbot
+If `chatbot_backend` fails with `FAISS index not found`, this is not a frontend bug. The generated `kb_faiss/` artifacts are missing:
+
+```text
+kb_faiss/kb.index.faiss
+kb_faiss/kb.index.meta.json
 ```
 
-Then verify:
+Build them locally before running the chatbot:
 
-- `http://localhost:8001/health`
+```bash
+pip install -r kb/requirements.txt
+make build-kb
+```
 
-If backend fails on startup, check whether the FAISS index files exist in `kb/`.
+### Strapi project not visible
 
----
+Check:
 
-## Environment Variables
+- project is published
+- Public role has `find` permission, or `STRAPI_API_TOKEN` is configured
+- Strapi and PostgreSQL are running
+- `http://localhost:8080/api/projects` returns data
 
-Documented in:
+### Old frontend-test containers
 
-- `.env.example`
+The `frontend-test` service was removed. If Docker reports orphans, run:
 
-Main groups:
+```bash
+make down
+```
 
-- Groq / chatbot
-- KB / RAG
-- Strapi / PostgreSQL
-
-Important note:
-
-- Strapi secrets must be present for the container to boot cleanly
-- the frontend does not talk directly to PostgreSQL
-- the frontend talks to Strapi, and Strapi talks to PostgreSQL
-
----
-
-## Practical Rules For Future Agents
+## Rules For Future Agents
 
 1. Treat Strapi as the source of truth for project cards.
-2. Treat `portfolio.ts` and `i18n.ts` as the source of truth for static site copy.
-3. Do not assume a frontend white page is caused by Strapi or PostgreSQL; check browser cache/extensions first.
-4. If `ProjectsPage` is broken, test `/cms/projects?populate=media&sort=date:desc` before changing UI code.
-5. If backend startup fails, check FAISS artifacts before debugging FastAPI logic.
-6. Keep the `COMPOSE_BAKE=false` Compose pattern unless the local Docker environment is explicitly fixed.
-7. When editing Strapi schema, update the frontend types and rendering path in the same change.
-8. When a project is saved in Strapi but not visible in frontend, verify both:
-   - `Public` role permissions
-   - published status
+2. Do not reintroduce hardcoded project cards in `frontend/app/page.tsx` except temporary placeholders for explicit UI experiments.
+3. Keep Strapi tokens server-side only.
+4. When changing the Strapi schema, update `frontend/lib/strapi.ts` and project rendering in `frontend/app/page.tsx`.
+5. Keep Next.js on internal port `5173` and expose the application only through the gateway.
+6. Do not restore the old Vite frontend unless the user explicitly asks.
+7. Do not commit or expose `.env`, `kb/`, `kb_faiss/`, Strapi uploads, or local build artifacts.

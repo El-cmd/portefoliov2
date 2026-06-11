@@ -1,28 +1,29 @@
-# Frontend
+# Valentin Loth Portfolio Frontend
 
-Portfolio multi-pages en **React + TypeScript + Tailwind** avec direction **pixel art rétro** et architecture branchée sur un backend séparé pour le chatbot.
+Frontend principal du projet, basé sur Next.js.
 
-## Pages
+## Lancer en local
 
-- `/` : hero + navigation vers les vues dédiées
-- `/projects` : galerie projets
-- `/about` : profil et direction visuelle
-- `/contact` : page contact UI-only, isolée pour une future intégration backend
-- `/chat` : assistant connecté au backend FastAPI
-
-## Commandes
+Depuis la racine du repo :
 
 ```bash
-npm install
-npm run dev
-npm run build
-npm run lint
+make up-front-cms
 ```
 
-## Fichiers clés
+URL :
 
-- `src/data/portfolio.ts` : contenu placeholder éditable
-- `src/layouts/AppShell.tsx` : layout partagé
-- `src/pages/` : pages routées
-- `Dockerfile` : build dev/prod du frontend
-- `docker/nginx/default.conf` : reverse proxy prod, incluant `/api/chat`
+```text
+http://localhost:8080
+```
+
+Le port Next.js `5173` reste interne a Docker. Le navigateur passe par la gateway Nginx.
+
+## Strapi
+
+La page `HUB` récupère les projets via la route Next `/api/projects`, qui appelle Strapi côté serveur.
+
+Si les permissions publiques Strapi sont fermées, ajoute un token read-only dans le `.env` racine :
+
+```env
+STRAPI_API_TOKEN=your_read_only_token
+```

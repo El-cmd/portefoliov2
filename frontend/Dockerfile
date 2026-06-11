@@ -1,21 +1,43 @@
-FROM node:22-alpine AS base
-WORKDIR /app
-COPY package.json package-lock.json ./
+FROM node:20-alpine AS dev
 
-FROM base AS deps
+WORKDIR /app
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY package*.json ./
 RUN npm ci
 
-FROM deps AS dev
 COPY . .
-EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
 
-FROM deps AS build
+EXPOSE 5173
+
+CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0", "-p", "5173"]
+
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY package*.json ./
+RUN npm ci
+
 COPY . .
 RUN npm run build
 
-FROM nginx:1.29-alpine AS prod
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+FROM node:20-alpine AS prod
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/public ./public
+COPY --from=build /app/next.config.mjs ./next.config.mjs
+
+EXPOSE 5173
+
+CMD ["npm", "run", "start", "--", "-H", "0.0.0.0", "-p", "5173"]

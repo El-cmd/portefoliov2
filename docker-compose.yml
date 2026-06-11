@@ -1,38 +1,83 @@
 services:
-  backend:
-    build:
-      context: ./backend
+  gateway:
+    image: nginx:1.27-alpine
     ports:
-      - "8001:8001"
+      - "${GATEWAY_PORT:-8080}:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./gateway/conf.d:/etc/nginx/conf.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/gateway-health | grep -q '^ok$'"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  gateway-prod:
+    profiles: ["prod"]
+    image: nginx:1.27-alpine
+    ports:
+      - "${GATEWAY_PORT:-8080}:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./gateway/conf.d:/etc/nginx/conf.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/gateway-health | grep -q '^ok$'"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  chatbot_backend:
+    build:
+      context: ./chatbot_backend
+    expose:
+      - "8001"
     environment:
       GROQ_API_KEY: ${GROQ_API_KEY}
       GROQ_MODEL: ${GROQ_MODEL:-llama-3.1-8b-instant}
       GROQ_TEMPERATURE: ${GROQ_TEMPERATURE:-0.1}
       GROQ_TIMEOUT_SECONDS: ${GROQ_TIMEOUT_SECONDS:-25}
+      GROQ_MAX_CONCURRENT_REQUESTS: ${GROQ_MAX_CONCURRENT_REQUESTS:-2}
+      GROQ_QUEUE_TIMEOUT_SECONDS: ${GROQ_QUEUE_TIMEOUT_SECONDS:-5}
+      PROMPT_GUARD_ENABLED: ${PROMPT_GUARD_ENABLED:-true}
+      PROMPT_GUARD_PRIMARY_MODEL: ${PROMPT_GUARD_PRIMARY_MODEL:-meta-llama/llama-prompt-guard-2-86m}
+      PROMPT_GUARD_FALLBACK_MODEL: ${PROMPT_GUARD_FALLBACK_MODEL:-meta-llama/llama-prompt-guard-2-22m}
+      PROMPT_GUARD_TIMEOUT_SECONDS: ${PROMPT_GUARD_TIMEOUT_SECONDS:-3}
+      PROMPT_GUARD_MALICIOUS_THRESHOLD: ${PROMPT_GUARD_MALICIOUS_THRESHOLD:-0.5}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-sentence-transformers/all-MiniLM-L6-v2}
+      HF_HOME: /app/.cache/huggingface
       CHAT_STRUCTURED_OUTPUT: ${CHAT_STRUCTURED_OUTPUT:-true}
       CHAT_DEBUG_LOG: ${CHAT_DEBUG_LOG:-false}
-      KB_DIR: /app/kb
-      KB_TOP_K: ${KB_TOP_K:-5}
-      KB_MIN_SCORE: ${KB_MIN_SCORE:-0.15}
+      KB_DIR: /app/kb_faiss
+      KB_TOP_K: ${KB_TOP_K:-4}
+      KB_MIN_SCORE: ${KB_MIN_SCORE:-0.2}
     volumes:
-      - ./kb:/app/kb:ro
+      - ./kb_faiss:/app/kb_faiss:ro
+      - chatbot_hf_cache:/app/.cache/huggingface
 
   frontend:
     build:
       context: ./frontend
       target: dev
-    ports:
-      - "5173:5173"
+    expose:
+      - "5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - frontend_node_modules:/app/node_modules
+      - frontend_next:/app/.next
     environment:
-      VITE_BACKEND_PROXY_URL: http://backend:8001
-      VITE_STRAPI_PROXY_URL: http://strapi:1337
       CHOKIDAR_USEPOLLING: "true"
-    command: npm run dev -- --host 0.0.0.0 --port 5173
+      NEXT_TELEMETRY_DISABLED: "1"
+      STRAPI_INTERNAL_URL: http://strapi:1337
+      STRAPI_API_TOKEN: ${STRAPI_API_TOKEN:-}
+      CHATBOT_INTERNAL_URL: http://chatbot_backend:8001
+      BACKEND_TIMEOUT_MS: ${BACKEND_TIMEOUT_MS:-30000}
+      CHAT_RATE_LIMIT_ENABLED: ${CHAT_RATE_LIMIT_ENABLED:-true}
+      CHAT_RATE_LIMIT_REQUESTS_PER_MINUTE: ${CHAT_RATE_LIMIT_REQUESTS_PER_MINUTE:-5}
+      CHAT_RATE_LIMIT_BURST: ${CHAT_RATE_LIMIT_BURST:-3}
+      CHAT_RATE_LIMIT_TRUST_PROXY_HEADERS: ${CHAT_RATE_LIMIT_TRUST_PROXY_HEADERS:-true}
+    command: npm run dev -- -H 0.0.0.0 -p 5173
     depends_on:
-      - backend
+      - chatbot_backend
       - strapi
 
   frontend-prod:
@@ -40,11 +85,25 @@ services:
     build:
       context: ./frontend
       target: prod
-    ports:
-      - "8080:80"
+    expose:
+      - "5173"
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+      STRAPI_INTERNAL_URL: http://strapi:1337
+      STRAPI_API_TOKEN: ${STRAPI_API_TOKEN:-}
+      CHATBOT_INTERNAL_URL: http://chatbot_backend:8001
+      BACKEND_TIMEOUT_MS: ${BACKEND_TIMEOUT_MS:-30000}
+      CHAT_RATE_LIMIT_ENABLED: ${CHAT_RATE_LIMIT_ENABLED:-true}
+      CHAT_RATE_LIMIT_REQUESTS_PER_MINUTE: ${CHAT_RATE_LIMIT_REQUESTS_PER_MINUTE:-5}
+      CHAT_RATE_LIMIT_BURST: ${CHAT_RATE_LIMIT_BURST:-3}
+      CHAT_RATE_LIMIT_TRUST_PROXY_HEADERS: ${CHAT_RATE_LIMIT_TRUST_PROXY_HEADERS:-true}
     depends_on:
-      - backend
+      - chatbot_backend
       - strapi
+    networks:
+      default:
+        aliases:
+          - frontend
 
   postgres:
     image: postgres:16-alpine
@@ -63,8 +122,9 @@ services:
   strapi:
     build:
       context: ./cms/strapi
-    ports:
-      - "${STRAPI_PORT:-1337}:1337"
+      target: dev
+    expose:
+      - "1337"
     environment:
       NODE_ENV: development
       HOST: 0.0.0.0
@@ -87,6 +147,7 @@ services:
       - ./cms/strapi:/opt/app
       - strapi_node_modules:/opt/app/node_modules
       - strapi_uploads:/opt/app/public/uploads
+    command: sh -c "${STRAPI_COMMAND:-npm run develop}"
     depends_on:
       postgres:
         condition: service_healthy
@@ -95,3 +156,6 @@ volumes:
   strapi_postgres_data:
   strapi_node_modules:
   strapi_uploads:
+  frontend_node_modules:
+  frontend_next:
+  chatbot_hf_cache:
