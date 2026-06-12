@@ -1026,6 +1026,10 @@ export default function Home() {
                     </svg>
                   </button>
                 </div>
+
+                <p className={`mobile-swipe-hint ${labelTextClass}`}>
+                  Swipez pour naviguer !
+                </p>
               </article>
 
               <article className="relative flex h-full w-screen shrink-0 snap-start items-center justify-center overflow-hidden">
