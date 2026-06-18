@@ -135,10 +135,8 @@ export default function Home() {
     })
   }
 
-  const handleChatSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    const message = chatInput.trim()
+  const sendChatMessage = async (rawMessage: string) => {
+    const message = rawMessage.trim()
     if (!message || isSendingChat) return
     if (message.length > MAX_CHAT_MESSAGE_LENGTH) {
       setChatError(`Le message ne doit pas depasser ${MAX_CHAT_MESSAGE_LENGTH} caracteres.`)
@@ -169,6 +167,11 @@ export default function Home() {
     } finally {
       setIsSendingChat(false)
     }
+  }
+
+  const handleChatSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    await sendChatMessage(chatInput)
   }
 
   useEffect(() => {
@@ -384,6 +387,7 @@ export default function Home() {
           isSendingChat={isSendingChat}
           chatError={chatError}
           handleChatSubmit={handleChatSubmit}
+          onSelectQuestion={sendChatMessage}
           maxChatMessageLength={MAX_CHAT_MESSAGE_LENGTH}
           gridColor={gridColor}
           isLightMode={isLightMode}

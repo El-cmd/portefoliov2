@@ -1,10 +1,18 @@
 "use client"
 
 import type { FormEvent, RefObject } from "react"
-import { SendHorizonal } from "lucide-react"
+import { MessageSquareText, SendHorizonal } from "lucide-react"
 import { ChatMessageContent } from "@/components/chat/ChatMessageContent"
 import FlickeringGrid from "@/components/flickering-grid"
 import type { ChatMessage } from "@/components/sections/types"
+
+const suggestedQuestions = [
+  "Quels sont tes projets principaux ?",
+  "Quelles sont tes competences techniques ?",
+  "Peux-tu me presenter ton experience ?",
+  "Comment te contacter ?",
+  "Es-tu disponible pour une mission ?",
+]
 
 type ChatSectionProps = {
   chatMessages: ChatMessage[]
@@ -14,6 +22,7 @@ type ChatSectionProps = {
   isSendingChat: boolean
   chatError: string | null
   handleChatSubmit: (event: FormEvent<HTMLFormElement>) => void
+  onSelectQuestion: (question: string) => void
   maxChatMessageLength: number
   gridColor: string
   isLightMode: boolean
@@ -32,6 +41,7 @@ export function ChatSection({
   isSendingChat,
   chatError,
   handleChatSubmit,
+  onSelectQuestion,
   maxChatMessageLength,
   gridColor,
   isLightMode,
@@ -41,6 +51,10 @@ export function ChatSection({
   assistantBubbleClass,
   userBubbleClass,
 }: ChatSectionProps) {
+  const quickQuestionClass = isLightMode
+    ? "border-black/10 bg-white/80 text-black hover:border-black/25 hover:bg-black hover:text-white disabled:bg-neutral-100 disabled:text-neutral-400"
+    : "border-white/10 bg-white/[0.045] text-white hover:border-white/25 hover:bg-white hover:text-black disabled:bg-white/[0.03] disabled:text-white/35"
+
   return (
     <section className={`chat-section relative h-screen overflow-hidden px-4 snap-start md:px-6 ${isLightMode ? "bg-white" : "bg-black"}`}>
       <FlickeringGrid
@@ -70,8 +84,24 @@ export function ChatSection({
           className="no-scrollbar my-6 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-1 py-2 md:my-8"
         >
           {chatMessages.length === 0 ? (
-            <div className={`mx-auto mt-10 max-w-xl rounded-2xl border px-5 py-4 text-center text-sm leading-6 backdrop-blur-sm ${chipClass}`}>
-              Demande-moi mes projets, mes competences, mes tarifs ou comment me contacter.
+            <div className={`mx-auto mt-10 w-full max-w-2xl rounded-2xl border px-5 py-5 text-sm leading-6 backdrop-blur-sm ${chipClass}`}>
+              <p className="text-center">
+                Demande-moi mes projets, mes competences, mes tarifs ou comment me contacter.
+              </p>
+              <div className="mt-5 grid gap-2 sm:grid-cols-2">
+                {suggestedQuestions.map((question) => (
+                  <button
+                    key={question}
+                    type="button"
+                    onClick={() => onSelectQuestion(question)}
+                    disabled={isSendingChat}
+                    className={`inline-flex min-h-11 items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs font-medium leading-5 transition disabled:cursor-not-allowed ${quickQuestionClass}`}
+                  >
+                    <MessageSquareText className="h-4 w-4 shrink-0" />
+                    <span>{question}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             chatMessages.map((message, index) => (
@@ -104,6 +134,23 @@ export function ChatSection({
             </div>
           ) : null}
         </div>
+
+        {chatMessages.length > 0 ? (
+          <div className="no-scrollbar -mt-2 flex shrink-0 gap-2 overflow-x-auto pb-3">
+            {suggestedQuestions.map((question) => (
+              <button
+                key={question}
+                type="button"
+                onClick={() => onSelectQuestion(question)}
+                disabled={isSendingChat}
+                className={`inline-flex h-9 shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-medium transition disabled:cursor-not-allowed ${quickQuestionClass}`}
+              >
+                <MessageSquareText className="h-3.5 w-3.5" />
+                {question}
+              </button>
+            ))}
+          </div>
+        ) : null}
 
         <form
           onSubmit={handleChatSubmit}
