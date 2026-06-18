@@ -17,7 +17,7 @@ Question utilisateur
 
 Les points faibles actuels sont :
 
-- Certaines intentions du routeur RAG ciblent encore d'anciens fichiers qui ne sont plus souhaites.
+- Les intentions du routeur RAG doivent rester alignees avec les fichiers KB reellement utilises.
 - Le modele d'embedding actuel est leger et pas ideal pour du contenu principalement francais.
 - Le seuil de pertinence peut laisser passer des extraits moyens.
 - Le chatbot ne conserve pas le contexte des questions precedentes.
@@ -25,9 +25,7 @@ Les points faibles actuels sont :
 
 ## Priorite 1 - Nettoyer le routage RAG
 
-Il n'est pas obligatoire de creer des fichiers separes pour les services, les tarifs, le process ou la FAQ.
-
-Les fichiers actuels peuvent rester :
+Les fichiers KB actuels peuvent rester :
 
 ```text
 kb/about.md
@@ -38,22 +36,12 @@ kb/skills.md
 
 Le point important est d'aligner `rag_service.py` avec cette organisation.
 
-Actuellement, certaines questions peuvent encore etre routees vers :
-
-```text
-services.md
-pricing.md
-process.md
-faq.md
-```
-
-Ce n'est pas grave si ces fichiers n'existent pas : le code retombe sur la recherche globale quand aucune source preferee ne donne de resultat. Mais ce n'est pas ideal, car l'intention "services / prix / devis" n'est pas clairement mappee sur les fichiers qui existent vraiment.
-
 Actions conseillees :
 
-1. Retirer les references a `services.md`, `pricing.md`, `process.md` et `faq.md` si ces fichiers ne seront pas utilises.
-2. Rediriger les questions "services", "prestations", "tarifs", "prix", "devis", "process" vers les fichiers existants les plus pertinents.
-3. Ajouter les informations utiles directement dans `skills.md`, `about.md` ou `contact.md`.
+1. Router les questions "services" et "prestations" vers `skills.md`.
+2. Router les questions "tarifs", "prix" et "devis" vers `contact.md` et `skills.md`.
+3. Router les questions "process", "methode", "livraison" et "maintenance" vers `about.md` et `contact.md`.
+4. Ajouter les informations utiles directement dans `skills.md`, `about.md` ou `contact.md`.
 
 Exemple d'organisation sans nouveaux fichiers :
 

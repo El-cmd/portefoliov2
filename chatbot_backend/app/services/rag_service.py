@@ -308,8 +308,14 @@ def _preferred_sources_for_query(query: str) -> set[str] | None:
     ):
         return {"about.md"}
 
-    if any(marker in normalized for marker in ("service", "propose", "tarif", "prix", "devis", "cout")):
-        return {"services.md", "pricing.md"}
+    if any(marker in normalized for marker in ("service", "propose", "prestation")):
+        return {"skills.md"}
+
+    if any(marker in normalized for marker in ("tarif", "prix", "devis", "cout")):
+        return {"contact.md", "skills.md"}
+
+    if any(marker in normalized for marker in ("process", "methode", "etape", "livraison", "maintenance", "delai")):
+        return {"about.md", "contact.md"}
 
     return None
 
@@ -326,8 +332,8 @@ def _should_skip_hit_for_query(hit: RagHit, retrieval_query: str) -> bool:
     asks_for_services = any(marker in normalized_query for marker in ("service", "propose", "prestation"))
     asks_for_limits = any(marker in normalized_query for marker in ("ne propose pas", "limite", "pas faire"))
 
-    if hit.source == "services.md" and asks_for_services and not asks_for_limits:
-        return "ce que je ne propose pas" in normalized_text
+    if asks_for_services and not asks_for_limits:
+        return any(marker in normalized_text for marker in ("ce que je ne propose pas", "prestations non couvertes"))
 
     return False
 
