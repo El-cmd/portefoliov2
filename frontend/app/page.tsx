@@ -21,6 +21,7 @@ import type { StrapiProject } from "@/lib/strapi"
 
 const MAX_CHAT_MESSAGE_LENGTH = 1000
 const CHAT_CLIENT_TIMEOUT_MS = 35000
+const CHAT_RATE_LIMIT_MAX_REQUESTS = 8
 
 const socialLinks = [
   {
@@ -49,6 +50,8 @@ export default function Home() {
   const [chatInput, setChatInput] = useState("")
   const [isSendingChat, setIsSendingChat] = useState(false)
   const [chatError, setChatError] = useState<string | null>(null)
+  const [chatRateLimitRemaining, setChatRateLimitRemaining] = useState<number | null>(CHAT_RATE_LIMIT_MAX_REQUESTS)
+  const [chatRateLimitRetryAfterSeconds, setChatRateLimitRetryAfterSeconds] = useState<number | null>(null)
   const [theme, setTheme] = useState<ThemeMode>("dark")
   const [activeHeroPanel, setActiveHeroPanel] = useState<"hub" | "home" | "about">("home")
   const pageScrollRef = useRef<HTMLDivElement>(null)
@@ -107,6 +110,20 @@ export default function Home() {
     ? "self-end border-black bg-black text-white"
     : "self-end border-white bg-white text-black"
 
+  const readPositiveIntegerHeader = (value: string | null) => {
+    if (!value) return null
+
+    const parsed = Number(value)
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : null
+  }
+
+  const readNonNegativeIntegerHeader = (value: string | null) => {
+    if (!value) return null
+
+    const parsed = Number(value)
+    return Number.isInteger(parsed) && parsed >= 0 ? parsed : null
+  }
+
   const playProjectVideo = async (id: number) => {
     const videos = videoRefs.current[id]
     if (!videos) return
@@ -148,6 +165,7 @@ export default function Home() {
     setChatMessages(nextMessages)
     setChatInput("")
     setChatError(null)
+    setChatRateLimitRetryAfterSeconds(null)
     setIsSendingChat(true)
 
     const controller = new AbortController()
@@ -160,6 +178,14 @@ export default function Home() {
         body: JSON.stringify({ message }),
         signal: controller.signal,
       })
+      const remainingHeader = readNonNegativeIntegerHeader(response.headers.get("RateLimit-Remaining"))
+      const retryAfterHeader = readPositiveIntegerHeader(response.headers.get("Retry-After"))
+
+      if (remainingHeader !== null) {
+        setChatRateLimitRemaining(remainingHeader)
+      }
+      setChatRateLimitRetryAfterSeconds(response.status === 429 ? retryAfterHeader : null)
+
       const payload = (await response.json()) as ChatApiResponse
 
       if (!response.ok || !payload.answer) {
@@ -399,6 +425,8 @@ export default function Home() {
           setChatInput={setChatInput}
           isSendingChat={isSendingChat}
           chatError={chatError}
+          chatRateLimitRemaining={chatRateLimitRemaining}
+          chatRateLimitRetryAfterSeconds={chatRateLimitRetryAfterSeconds}
           handleChatSubmit={handleChatSubmit}
           onSelectQuestion={sendChatMessage}
           maxChatMessageLength={MAX_CHAT_MESSAGE_LENGTH}

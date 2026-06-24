@@ -21,6 +21,8 @@ type ChatSectionProps = {
   setChatInput: (value: string) => void
   isSendingChat: boolean
   chatError: string | null
+  chatRateLimitRemaining: number | null
+  chatRateLimitRetryAfterSeconds: number | null
   handleChatSubmit: (event: FormEvent<HTMLFormElement>) => void
   onSelectQuestion: (question: string) => void
   maxChatMessageLength: number
@@ -40,6 +42,8 @@ export function ChatSection({
   setChatInput,
   isSendingChat,
   chatError,
+  chatRateLimitRemaining,
+  chatRateLimitRetryAfterSeconds,
   handleChatSubmit,
   onSelectQuestion,
   maxChatMessageLength,
@@ -169,19 +173,28 @@ export function ChatSection({
                 isLightMode ? "text-black placeholder:text-neutral-500" : "text-white placeholder:text-gray-600"
               }`}
             />
-            <p
-              id="chat-character-counter"
-              aria-live="polite"
-              className={`px-1 text-right text-xs tabular-nums ${
-                maxChatMessageLength - chatInput.length <= 100
-                  ? isLightMode
-                    ? "text-red-700"
-                    : "text-red-300"
-                  : labelTextClass
-              }`}
-            >
-              {maxChatMessageLength - chatInput.length} caracteres restants
-            </p>
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 px-1 text-xs">
+              <p
+                aria-live="polite"
+                className={`tabular-nums ${isLightMode ? "text-neutral-600" : "text-gray-400"}`}
+              >
+                Quota estimé: {chatRateLimitRemaining ?? "?"} requetes restantes
+                {chatRateLimitRetryAfterSeconds ? `, reessaie dans ${chatRateLimitRetryAfterSeconds}s` : ""}
+              </p>
+              <p
+                id="chat-character-counter"
+                aria-live="polite"
+                className={`tabular-nums ${
+                  maxChatMessageLength - chatInput.length <= 100
+                    ? isLightMode
+                      ? "text-red-700"
+                      : "text-red-300"
+                    : labelTextClass
+                }`}
+              >
+                {maxChatMessageLength - chatInput.length} caracteres restants
+              </p>
+            </div>
           </div>
           <button
             type="submit"
