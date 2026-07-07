@@ -4,6 +4,8 @@ export type StrapiMedia = {
   name?: string
   alternativeText?: string | null
   mime?: string
+  hash?: string
+  formats?: Record<string, { url?: string | null }> | null
   previewUrl?: string | null
   url: string
 }
@@ -39,4 +41,23 @@ export function getStrapiAssetUrl(url?: string | null) {
   }
 
   return `/${url}`
+}
+
+export function getStrapiMediaPosterUrl(media?: StrapiMedia | null) {
+  const remotePosterUrl =
+    media?.previewUrl ??
+    media?.formats?.thumbnail?.url ??
+    media?.formats?.small?.url ??
+    media?.formats?.medium?.url ??
+    null
+
+  if (remotePosterUrl) {
+    return getStrapiAssetUrl(remotePosterUrl)
+  }
+
+  if (media?.mime?.startsWith("video/") && media.hash) {
+    return `/project-posters/${media.hash}.jpg`
+  }
+
+  return null
 }

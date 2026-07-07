@@ -46,7 +46,7 @@ type PortfolioClientProps = {
 }
 
 export function PortfolioClient({ initialProjects, initialProjectsError }: PortfolioClientProps) {
-  const [projects, setProjects] = useState<StrapiProject[]>(() => initialProjects)
+  const [projects] = useState<StrapiProject[]>(() => initialProjects)
   const isLoadingProjects = false
   const hasProjectsError = Boolean(initialProjectsError)
   const [activeDescription, setActiveDescription] = useState<ActiveProjectDescription | null>(null)
@@ -62,6 +62,7 @@ export function PortfolioClient({ initialProjects, initialProjectsError }: Portf
   const heroRailRef = useRef<HTMLDivElement>(null)
   const chatMessagesRef = useRef<HTMLDivElement>(null)
   const videoRefs = useRef<Record<number, ProjectVideoRefs>>({})
+  const [readyProjectVideoIds, setReadyProjectVideoIds] = useState<Set<number>>(() => new Set())
   const isLightMode = theme === "light"
   const gridColor = isLightMode ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)"
   const mainThemeClass = isLightMode ? "bg-white text-black" : "bg-black text-white"
@@ -128,14 +129,31 @@ export function PortfolioClient({ initialProjects, initialProjectsError }: Portf
     return Number.isInteger(parsed) && parsed >= 0 ? parsed : null
   }
 
+  const markProjectVideoReady = (id: number) => {
+    setReadyProjectVideoIds((currentIds) => {
+      if (currentIds.has(id)) {
+        return currentIds
+      }
+
+      const nextIds = new Set(currentIds)
+      nextIds.add(id)
+      return nextIds
+    })
+  }
+
   const playProjectVideo = async (id: number) => {
     const videos = videoRefs.current[id]
     if (!videos) return
 
-    await Promise.all(
-      Object.values(videos).map(async (video) => {
-        if (!video) return
+    if (!videos.main || videos.main.readyState < 3) return
 
+    const playableVideos = Object.values(videos).filter(
+      (video): video is HTMLVideoElement => Boolean(video && video.readyState >= 3),
+    )
+    if (playableVideos.length === 0) return
+
+    await Promise.all(
+      playableVideos.map(async (video) => {
         try {
           await video.play()
         } catch {
@@ -349,8 +367,10 @@ export function PortfolioClient({ initialProjects, initialProjectsError }: Portf
                 hasProjectsError={hasProjectsError}
                 heroRailRef={heroRailRef}
                 videoRefs={videoRefs}
+                readyProjectVideoIds={readyProjectVideoIds}
                 playProjectVideo={playProjectVideo}
                 pauseProjectVideo={pauseProjectVideo}
+                onProjectVideoCanPlay={markProjectVideoReady}
                 onShowDescription={setActiveDescription}
                 gridColor={gridColor}
                 isLightMode={isLightMode}
