@@ -194,8 +194,8 @@ export function AboutPanel({
               </div>
             </div>
 
-            <div className="relative z-10 grid min-h-[25rem] grid-cols-1 items-center gap-5 sm:grid-cols-[1fr_18rem] lg:min-h-[28rem]">
-              <div className="pointer-events-none relative order-2 mx-auto h-[23rem] w-full max-w-[25rem] sm:order-1 lg:absolute lg:bottom-0 lg:left-[-3rem] lg:h-[31rem] lg:max-w-[31rem]">
+            <div className="relative z-10 min-h-[25rem] lg:min-h-[28rem]">
+              <div className="pointer-events-none relative mx-auto h-[23rem] w-full max-w-[25rem] lg:absolute lg:bottom-0 lg:left-[-3rem] lg:h-[31rem] lg:max-w-[31rem]">
                 <div className={`absolute inset-x-6 bottom-2 top-8 rounded-full blur-3xl ${portraitGlowClass}`} />
                 <Image
                   src="/assets/valentinLoth.png"
@@ -207,7 +207,7 @@ export function AboutPanel({
                 />
               </div>
 
-              <div className="relative z-20 order-1 ml-auto grid w-full max-w-[18rem] grid-cols-2 gap-3 sm:order-2 sm:max-w-none lg:translate-x-12 xl:translate-x-20">
+              <div className="relative z-20 ml-auto mt-5 grid w-full max-w-[18rem] grid-cols-2 gap-3 lg:absolute lg:right-[-5rem] lg:top-14 lg:mt-0 xl:right-[-8rem] 2xl:right-[-10rem]">
                 {stats.map(({ value, label, icon: Icon }) => (
                   <article
                     key={label}
