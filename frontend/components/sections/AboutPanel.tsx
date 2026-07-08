@@ -207,7 +207,7 @@ export function AboutPanel({
                 />
               </div>
 
-              <div className="relative z-20 order-1 grid grid-cols-2 gap-3 sm:order-2">
+              <div className="relative z-20 order-1 ml-auto grid w-full max-w-[18rem] grid-cols-2 gap-3 sm:order-2 sm:max-w-none lg:translate-x-12 xl:translate-x-20">
                 {stats.map(({ value, label, icon: Icon }) => (
                   <article
                     key={label}
