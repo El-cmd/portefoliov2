@@ -168,29 +168,29 @@ export function AboutPanel({
             </div>
 
             <div className="relative z-10 min-h-[20rem] lg:min-h-[23rem]">
-              <div className="pointer-events-none relative mx-auto h-[20rem] w-full max-w-[24rem] lg:absolute lg:bottom-0 lg:left-[-2rem] lg:h-[25rem] lg:max-w-[28rem]">
-                <div className={`absolute inset-x-6 bottom-2 top-8 rounded-full blur-3xl ${portraitGlowClass}`} />
+              <div className="pointer-events-none relative mx-auto h-[18rem] w-[18rem] overflow-hidden rounded-full sm:h-[20rem] sm:w-[20rem] lg:absolute lg:bottom-2 lg:left-[-1rem] lg:h-[22rem] lg:w-[22rem]">
+                <div className={`absolute inset-4 rounded-full blur-3xl ${portraitGlowClass}`} />
                 <Image
                   src="/assets/valentinLoth.png"
                   alt="Portrait de Valentin Loth"
                   fill
-                  sizes="(min-width: 1024px) 31rem, 25rem"
+                  sizes="(min-width: 1024px) 22rem, 20rem"
                   priority
-                  className="relative z-10 object-contain object-bottom drop-shadow-[0_28px_55px_rgba(0,0,0,0.48)]"
+                  className="relative z-10 object-cover object-top drop-shadow-[0_28px_55px_rgba(0,0,0,0.48)]"
                 />
               </div>
 
-              <div className="relative z-20 ml-auto mt-4 grid w-full max-w-[18rem] grid-cols-2 gap-3 lg:absolute lg:right-[-5rem] lg:top-10 lg:mt-0 xl:right-[-8rem] 2xl:right-[-10rem]">
+              <div className="relative z-20 ml-auto mt-4 grid w-full max-w-[15rem] grid-cols-2 gap-2.5 lg:absolute lg:right-0 lg:top-12 lg:mt-0 xl:right-2">
                 {stats.map(({ value, label, icon: Icon }) => (
                   <article
                     key={label}
-                    className={`min-h-[5.7rem] rounded-lg border p-4 backdrop-blur-xl ${subtleSurfaceClass}`}
+                    className={`min-h-[4.9rem] rounded-lg border p-3 backdrop-blur-xl ${subtleSurfaceClass}`}
                   >
-                    <div className="flex items-center gap-3">
-                      <Icon className="h-5 w-5" />
-                      <strong className="text-xl font-medium tracking-tight sm:text-2xl">{value}</strong>
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-4 w-4" />
+                      <strong className="text-lg font-medium tracking-tight sm:text-xl">{value}</strong>
                     </div>
-                    <p className={`mt-3 text-xs leading-5 sm:text-sm ${mutedTextClass}`}>{label}</p>
+                    <p className={`mt-2 text-xs leading-4 ${mutedTextClass}`}>{label}</p>
                   </article>
                 ))}
               </div>
