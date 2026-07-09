@@ -8,14 +8,10 @@ import {
   Download,
   FileText,
   Github,
-  Lightbulb,
   Linkedin,
   Mail,
   Rocket,
-  ShieldCheck,
-  Target,
   UserRound,
-  UsersRound,
 } from "lucide-react"
 import Image from "next/image"
 import FlickeringGrid from "@/components/flickering-grid"
@@ -77,29 +73,6 @@ const expertise = [
   },
 ]
 
-const values = [
-  {
-    title: "Impact",
-    description: "Je construis des solutions qui repondent a de vrais besoins.",
-    icon: Target,
-  },
-  {
-    title: "Fiabilite",
-    description: "Code propre, tests, monitoring : pret pour la production.",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Apprentissage",
-    description: "Curieux, autonome et toujours en veille technologique.",
-    icon: Lightbulb,
-  },
-  {
-    title: "Collaboration",
-    description: "A l'ecoute, transparent et oriente equipe et utilisateur.",
-    icon: UsersRound,
-  },
-]
-
 export function AboutPanel({
   heroRailRef,
   gridColor,
@@ -146,15 +119,15 @@ export function AboutPanel({
 
       <div
         data-annex-scroll
-        className="no-scrollbar relative z-10 h-full w-full max-w-7xl overflow-y-auto overscroll-contain px-5 pb-10 pt-24 sm:px-7 md:px-10 lg:px-12 lg:pb-12 lg:pt-20"
+        className="no-scrollbar relative z-10 h-full w-full max-w-7xl overflow-y-auto overscroll-contain px-5 pb-6 pt-20 sm:px-7 md:px-10 lg:px-12 lg:pt-16"
       >
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
-          <section className="relative grid min-h-[26rem] gap-7 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
+          <section className="relative grid min-h-[21rem] gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <div className="relative z-20 max-w-xl text-left">
               <p className={`mb-3 text-[0.68rem] uppercase tracking-[0.46em] ${labelTextClass}`}>
                 About
               </p>
-              <h2 className={`text-5xl font-medium tracking-tight sm:text-6xl lg:text-7xl ${primaryTextClass}`}>
+              <h2 className={`text-5xl font-medium tracking-tight sm:text-6xl lg:text-6xl ${primaryTextClass}`}>
                 Valentin Loth
               </h2>
               <p className={`mt-5 text-base leading-7 sm:text-lg ${mutedTextClass}`}>
@@ -165,7 +138,7 @@ export function AboutPanel({
                 constante : livrer des solutions fiables, maintenables et pretes pour la production.
               </p>
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-wrap gap-3">
                 <a
                   href="mailto:lecmd@proton.me"
                   className={`inline-flex h-11 items-center gap-2 rounded-lg border px-4 text-sm font-medium transition ${strongButtonClass}`}
@@ -194,8 +167,8 @@ export function AboutPanel({
               </div>
             </div>
 
-            <div className="relative z-10 min-h-[25rem] lg:min-h-[28rem]">
-              <div className="pointer-events-none relative mx-auto h-[23rem] w-full max-w-[25rem] lg:absolute lg:bottom-0 lg:left-[-3rem] lg:h-[31rem] lg:max-w-[31rem]">
+            <div className="relative z-10 min-h-[20rem] lg:min-h-[23rem]">
+              <div className="pointer-events-none relative mx-auto h-[20rem] w-full max-w-[24rem] lg:absolute lg:bottom-0 lg:left-[-2rem] lg:h-[25rem] lg:max-w-[28rem]">
                 <div className={`absolute inset-x-6 bottom-2 top-8 rounded-full blur-3xl ${portraitGlowClass}`} />
                 <Image
                   src="/assets/valentinLoth.png"
@@ -207,11 +180,11 @@ export function AboutPanel({
                 />
               </div>
 
-              <div className="relative z-20 ml-auto mt-5 grid w-full max-w-[18rem] grid-cols-2 gap-3 lg:absolute lg:right-[-5rem] lg:top-14 lg:mt-0 xl:right-[-8rem] 2xl:right-[-10rem]">
+              <div className="relative z-20 ml-auto mt-4 grid w-full max-w-[18rem] grid-cols-2 gap-3 lg:absolute lg:right-[-5rem] lg:top-10 lg:mt-0 xl:right-[-8rem] 2xl:right-[-10rem]">
                 {stats.map(({ value, label, icon: Icon }) => (
                   <article
                     key={label}
-                    className={`min-h-[6.2rem] rounded-lg border p-4 backdrop-blur-xl ${subtleSurfaceClass}`}
+                    className={`min-h-[5.7rem] rounded-lg border p-4 backdrop-blur-xl ${subtleSurfaceClass}`}
                   >
                     <div className="flex items-center gap-3">
                       <Icon className="h-5 w-5" />
@@ -228,7 +201,7 @@ export function AboutPanel({
             {expertise.map(({ title, description, icon: Icon }, index) => (
               <article
                 key={title}
-                className={`flex min-h-[6.25rem] items-center gap-4 px-6 py-5 ${
+                className={`flex min-h-[5.5rem] items-center gap-4 px-6 py-4 ${
                   index > 0 ? `border-t md:border-l md:border-t-0 ${dividerClass}` : ""
                 }`}
               >
@@ -241,59 +214,59 @@ export function AboutPanel({
             ))}
           </section>
 
-          <section className={`rounded-lg border p-6 backdrop-blur-xl lg:p-7 ${surfaceClass}`}>
-            <div className="grid gap-7 lg:grid-cols-[0.25fr_0.75fr] lg:items-center">
+          <section className={`rounded-lg border p-5 backdrop-blur-xl lg:p-5 ${surfaceClass}`}>
+            <div className="grid gap-5 lg:grid-cols-[0.25fr_0.75fr] lg:items-center">
               <div className="text-left">
                 <h3 className="text-xl font-semibold tracking-tight">Mon parcours</h3>
-                <p className={`mt-4 max-w-xs text-sm leading-7 ${mutedTextClass}`}>
+                <p className={`mt-3 max-w-xs text-sm leading-6 ${mutedTextClass}`}>
                   Chaque etape m&apos;a permis de grandir, d&apos;apprendre et de construire des projets concrets a impact.
                 </p>
                 <a
                   href="/cv.pdf"
-                  className={`mt-5 inline-flex h-10 items-center gap-3 rounded-lg border px-4 text-sm font-medium transition ${quietButtonClass}`}
+                  className={`mt-4 inline-flex h-10 items-center gap-3 rounded-lg border px-4 text-sm font-medium transition ${quietButtonClass}`}
                 >
                   Telecharger mon CV
                   <Download className="h-4 w-4" />
                 </a>
               </div>
 
-              <div className="relative grid gap-6 md:grid-cols-3">
+              <div className="relative grid gap-5 md:grid-cols-3">
                 <div className={`pointer-events-none absolute left-[13%] right-[13%] top-5 hidden border-t ${dividerClass} md:block`} />
 
                 <article className="relative grid gap-4 text-left md:grid-cols-[5.5rem_1fr]">
-                  <div className={`relative z-10 grid h-20 w-20 place-items-center rounded-full border ${dividerClass} ${subtleSurfaceClass}`}>
+                  <div className={`relative z-10 grid h-16 w-16 place-items-center rounded-full border ${dividerClass} ${subtleSurfaceClass}`}>
                     <Image src="/assets/42.png" alt="42 School" width={40} height={40} className="object-contain" />
                   </div>
                   <div>
                     <h4 className="font-semibold">42 School</h4>
                     <p className={`mt-1 text-sm ${mutedTextClass}`}>2022 - 2024</p>
-                    <p className={`mt-3 text-sm leading-6 ${mutedTextClass}`}>
+                    <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>
                       Formation intense en autonomie. Projets en C, C++, Python, systemes et reseau.
                     </p>
                   </div>
                 </article>
 
                 <article className="relative grid gap-4 text-left md:grid-cols-[5.5rem_1fr]">
-                  <div className={`relative z-10 grid h-20 w-20 place-items-center rounded-full border ${dividerClass} ${subtleSurfaceClass}`}>
+                  <div className={`relative z-10 grid h-16 w-16 place-items-center rounded-full border ${dividerClass} ${subtleSurfaceClass}`}>
                     <span className="text-3xl font-black tracking-[-0.12em]">V+</span>
                   </div>
                   <div>
                     <h4 className="font-semibold">Stage - OVHcloud</h4>
                     <p className={`mt-1 text-sm ${mutedTextClass}`}>2024 - 2025</p>
-                    <p className={`mt-3 text-sm leading-6 ${mutedTextClass}`}>
+                    <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>
                       AI Engineer - Conception d&apos;un AI HUB, RAG, integrations IA et mise en production sur Kubernetes.
                     </p>
                   </div>
                 </article>
 
                 <article className="relative grid gap-4 text-left md:grid-cols-[5.5rem_1fr]">
-                  <div className={`relative z-10 grid h-20 w-20 place-items-center rounded-full border ${dividerClass} ${subtleSurfaceClass}`}>
+                  <div className={`relative z-10 grid h-16 w-16 place-items-center rounded-full border ${dividerClass} ${subtleSurfaceClass}`}>
                     <Rocket className="h-9 w-9" />
                   </div>
                   <div>
                     <h4 className="font-semibold">Aujourd&apos;hui</h4>
                     <p className={`mt-1 text-sm ${mutedTextClass}`}>2025 -&gt;</p>
-                    <p className={`mt-3 text-sm leading-6 ${mutedTextClass}`}>
+                    <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>
                       A la recherche de nouveaux defis pour construire des produits utiles et scalables.
                     </p>
                   </div>
@@ -302,25 +275,6 @@ export function AboutPanel({
             </div>
           </section>
 
-          <section className={`rounded-lg border p-6 backdrop-blur-xl lg:p-7 ${surfaceClass}`}>
-            <h3 className="text-left text-xl font-semibold tracking-tight">Mes valeurs</h3>
-            <div className="mt-6 grid gap-5 md:grid-cols-4">
-              {values.map(({ title, description, icon: Icon }, index) => (
-                <article
-                  key={title}
-                  className={`flex gap-4 text-left ${
-                    index > 0 ? `border-t pt-5 md:border-l md:border-t-0 md:pl-7 md:pt-0 ${dividerClass}` : ""
-                  }`}
-                >
-                  <Icon className="h-8 w-8 shrink-0" />
-                  <div>
-                    <h4 className="font-semibold">{title}</h4>
-                    <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>{description}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
         </div>
       </div>
 
