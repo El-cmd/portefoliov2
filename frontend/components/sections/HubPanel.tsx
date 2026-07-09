@@ -107,6 +107,7 @@ export function HubPanel({
               const mediaUrl = getStrapiAssetUrl(project.media?.url)
               const mediaPosterUrl = getStrapiMediaPosterUrl(project.media)
               const isVideo = project.media?.mime?.startsWith("video/")
+              const ambientMediaUrl = isVideo ? mediaPosterUrl : mediaUrl
               const isProjectVideoReady = readyProjectVideoIds.has(project.id)
               const projectUrl = normalizeOptionalText(project.project_url)
               const gitUrl = normalizeOptionalText(project.git_url)
@@ -137,39 +138,16 @@ export function HubPanel({
                   }}
                   className={`premium-project-card group relative flex h-[25rem] self-start flex-col overflow-hidden rounded-[1.75rem] border text-left backdrop-blur-xl transition duration-500 hover:-translate-y-1 ${premiumProjectCardClass}`}
                 >
-                  {mediaUrl ? (
+                  {ambientMediaUrl ? (
                     <div className="project-card-ambient pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
-                      {isVideo ? (
-                        <>
-                          <video
-                            ref={(node) => {
-                              const refs = videoRefs.current[project.id] ?? { ambient: null, main: null }
-                              refs.ambient = node
-                              videoRefs.current[project.id] = refs
-                            }}
-                            src={mediaUrl}
-                            muted
-                            playsInline
-                            preload="auto"
-                            tabIndex={-1}
-                            className="h-full w-full object-cover"
-                          />
-                          {mediaPosterUrl ? (
-                            <img
-                              src={mediaPosterUrl}
-                              alt=""
-                              onError={(event) => {
-                                event.currentTarget.hidden = true
-                              }}
-                              className={`absolute inset-0 h-full w-full object-cover transition duration-300 ${
-                                isProjectVideoReady ? "group-hover:opacity-0" : "opacity-100"
-                              }`}
-                            />
-                          ) : null}
-                        </>
-                      ) : (
-                        <img src={mediaUrl} alt="" className="h-full w-full object-cover" />
-                      )}
+                      <img
+                        src={ambientMediaUrl}
+                        alt=""
+                        onError={(event) => {
+                          event.currentTarget.hidden = true
+                        }}
+                        className="h-full w-full object-cover"
+                      />
                     </div>
                   ) : null}
                   <div
@@ -195,14 +173,14 @@ export function HubPanel({
                         <>
                           <video
                             ref={(node) => {
-                              const refs = videoRefs.current[project.id] ?? { ambient: null, main: null }
+                              const refs = videoRefs.current[project.id] ?? { main: null }
                               refs.main = node
                               videoRefs.current[project.id] = refs
                             }}
                             src={mediaUrl}
                             muted
                             playsInline
-                            preload="auto"
+                            preload="metadata"
                             onCanPlay={() => onProjectVideoCanPlay(project.id)}
                             className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]"
                           />

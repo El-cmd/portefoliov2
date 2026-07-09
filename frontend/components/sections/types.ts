@@ -4,7 +4,6 @@ import type { StrapiProject } from "@/lib/strapi"
 export type ThemeMode = "dark" | "light"
 
 export type ProjectVideoRefs = {
-  ambient: HTMLVideoElement | null
   main: HTMLVideoElement | null
 }
 

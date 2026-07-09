@@ -145,34 +145,23 @@ export function PortfolioClient({ initialProjects, initialProjectsError }: Portf
     const videos = videoRefs.current[id]
     if (!videos) return
 
-    if (!videos.main || videos.main.readyState < 3) return
+    if (!videos.main) return
 
-    const playableVideos = Object.values(videos).filter(
-      (video): video is HTMLVideoElement => Boolean(video && video.readyState >= 3),
-    )
-    if (playableVideos.length === 0) return
-
-    await Promise.all(
-      playableVideos.map(async (video) => {
-        try {
-          await video.play()
-        } catch {
-          // Some browsers can reject autoplay even when muted; keep the UI silent.
-        }
-      }),
-    )
+    try {
+      await videos.main.play()
+    } catch {
+      // Some browsers can reject autoplay even when muted; keep the UI silent.
+    }
   }
 
   const pauseProjectVideo = (id: number) => {
     const videos = videoRefs.current[id]
     if (!videos) return
 
-    Object.values(videos).forEach((video) => {
-      if (!video) return
+    if (!videos.main) return
 
-      video.pause()
-      video.currentTime = 0
-    })
+    videos.main.pause()
+    videos.main.currentTime = 0
   }
 
   const sendChatMessage = async (rawMessage: string) => {
