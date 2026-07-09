@@ -58,6 +58,122 @@
     padding-inline: 1rem;
   }
 
+  .about-panel-scroll {
+    overflow: hidden;
+    padding: 5.4rem 1.1rem 0.85rem;
+  }
+
+  .about-panel-inner {
+    height: 100%;
+    gap: 0;
+  }
+
+  .about-hero {
+    min-height: 0;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0.55rem;
+  }
+
+  .about-kicker {
+    margin-bottom: 0.45rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.34em;
+  }
+
+  .about-name {
+    font-size: clamp(2.45rem, 13vw, 3.35rem);
+    line-height: 0.98;
+  }
+
+  .about-lead {
+    margin-top: 0.8rem;
+    font-size: 0.98rem;
+    line-height: 1.45;
+  }
+
+  .about-copy {
+    margin-top: 0.65rem;
+    max-width: 100%;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .about-links {
+    margin-top: 0.85rem;
+    gap: 0.5rem;
+  }
+
+  .about-link {
+    height: 2.35rem;
+    gap: 0.45rem;
+    border-radius: 0.55rem;
+    padding-inline: 0.8rem;
+    font-size: 0.78rem;
+  }
+
+  .about-link svg {
+    height: 0.9rem;
+    width: 0.9rem;
+  }
+
+  .about-visual {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 9.5rem;
+    align-items: end;
+    gap: 0.7rem;
+  }
+
+  .about-portrait {
+    grid-column: 2;
+    grid-row: 1;
+    height: min(33vh, 12.5rem);
+    width: min(33vh, 12.5rem);
+    margin: 0 0 0 auto;
+  }
+
+  .about-stats {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: end;
+    margin: 0;
+    width: 100%;
+    max-width: none;
+    gap: 0.45rem;
+  }
+
+  .about-stat {
+    min-height: 3.75rem;
+    padding: 0.55rem;
+    border-radius: 0.55rem;
+  }
+
+  .about-stat svg {
+    height: 0.85rem;
+    width: 0.85rem;
+  }
+
+  .about-stat strong {
+    font-size: 0.98rem;
+  }
+
+  .about-stat p {
+    margin-top: 0.3rem;
+    font-size: 0.68rem;
+    line-height: 1.25;
+  }
+
+  .about-expertise,
+  .about-journey {
+    display: none;
+  }
+
   .hub-title {
     font-size: clamp(2rem, 9vw, 2.5rem);
     line-height: 1.1;

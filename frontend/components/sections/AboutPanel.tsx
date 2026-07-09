@@ -119,30 +119,30 @@ export function AboutPanel({
 
       <div
         data-annex-scroll
-        className="no-scrollbar relative z-10 h-full w-full max-w-7xl overflow-y-auto overscroll-contain px-5 pb-6 pt-20 sm:px-7 md:px-10 lg:px-12 lg:pt-16"
+        className="about-panel-scroll no-scrollbar relative z-10 h-full w-full max-w-7xl overflow-y-auto overscroll-contain px-5 pb-6 pt-20 sm:px-7 md:px-10 lg:px-12 lg:pt-16"
       >
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
-          <section className="relative grid min-h-[21rem] gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div className="about-panel-inner mx-auto flex w-full max-w-6xl flex-col gap-4">
+          <section className="about-hero relative grid min-h-[21rem] gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <div className="relative z-20 max-w-xl text-left">
-              <p className={`mb-3 text-[0.68rem] uppercase tracking-[0.46em] ${labelTextClass}`}>
+              <p className={`about-kicker mb-3 text-[0.68rem] uppercase tracking-[0.46em] ${labelTextClass}`}>
                 About
               </p>
-              <h2 className={`text-5xl font-medium tracking-tight sm:text-6xl lg:text-6xl ${primaryTextClass}`}>
+              <h2 className={`about-name text-5xl font-medium tracking-tight sm:text-6xl lg:text-6xl ${primaryTextClass}`}>
                 Valentin Loth
               </h2>
-              <p className={`mt-5 text-base leading-7 sm:text-lg ${mutedTextClass}`}>
+              <p className={`about-lead mt-5 text-base leading-7 sm:text-lg ${mutedTextClass}`}>
                 Je construis des produits, pas seulement du code.
               </p>
-              <p className={`mt-4 max-w-lg text-sm font-light leading-7 sm:text-base ${mutedTextClass}`}>
+              <p className={`about-copy mt-4 max-w-lg text-sm font-light leading-7 sm:text-base ${mutedTextClass}`}>
                 Issu de 42 et enrichi par une experience chez OVHcloud, j&apos;aime concevoir des applications qui
                 repondent a de vrais besoins. Du frontend aux APIs, jusqu&apos;aux integrations IA et au deploiement sur
                 Kubernetes, je cherche toujours a creer des solutions utiles, maintenables et agreables a utiliser.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="about-links mt-6 flex flex-wrap gap-3">
                 <a
                   href="mailto:lecmd@proton.me"
-                  className={`inline-flex h-11 items-center gap-2 rounded-lg border px-4 text-sm font-medium transition ${strongButtonClass}`}
+                  className={`about-link inline-flex h-11 items-center gap-2 rounded-lg border px-4 text-sm font-medium transition ${strongButtonClass}`}
                 >
                   <Mail className="h-4 w-4" />
                   Me contacter
@@ -151,7 +151,7 @@ export function AboutPanel({
                   href="https://github.com/El-cmd"
                   target="_blank"
                   rel="noreferrer"
-                  className={`inline-flex h-11 items-center gap-2 rounded-lg border px-5 text-sm font-medium transition ${quietButtonClass}`}
+                  className={`about-link inline-flex h-11 items-center gap-2 rounded-lg border px-5 text-sm font-medium transition ${quietButtonClass}`}
                 >
                   <Github className="h-4 w-4" />
                   GitHub
@@ -160,7 +160,7 @@ export function AboutPanel({
                   href="https://fr.linkedin.com/in/valentinloth"
                   target="_blank"
                   rel="noreferrer"
-                  className={`inline-flex h-11 items-center gap-2 rounded-lg border px-5 text-sm font-medium transition ${quietButtonClass}`}
+                  className={`about-link inline-flex h-11 items-center gap-2 rounded-lg border px-5 text-sm font-medium transition ${quietButtonClass}`}
                 >
                   <Linkedin className="h-4 w-4" />
                   Linkedin
@@ -168,8 +168,8 @@ export function AboutPanel({
               </div>
             </div>
 
-            <div className="relative z-10 min-h-[20rem] lg:min-h-[23rem]">
-              <div className="pointer-events-none relative mx-auto h-[18rem] w-[18rem] overflow-hidden rounded-full sm:h-[20rem] sm:w-[20rem] lg:absolute lg:bottom-2 lg:left-[-1rem] lg:h-[22rem] lg:w-[22rem]">
+            <div className="about-visual relative z-10 min-h-[20rem] lg:min-h-[23rem]">
+              <div className="about-portrait pointer-events-none relative mx-auto h-[18rem] w-[18rem] overflow-hidden rounded-full sm:h-[20rem] sm:w-[20rem] lg:absolute lg:bottom-2 lg:left-[-1rem] lg:h-[22rem] lg:w-[22rem]">
                 <div className={`absolute inset-4 rounded-full blur-3xl ${portraitGlowClass}`} />
                 <Image
                   src="/assets/valentinLoth.png"
@@ -181,11 +181,11 @@ export function AboutPanel({
                 />
               </div>
 
-              <div className="relative z-20 ml-auto mt-4 grid w-full max-w-[15rem] grid-cols-2 gap-2.5 lg:absolute lg:right-0 lg:top-20 lg:mt-0 xl:right-2">
+              <div className="about-stats relative z-20 ml-auto mt-4 grid w-full max-w-[15rem] grid-cols-2 gap-2.5 lg:absolute lg:right-0 lg:top-20 lg:mt-0 xl:right-2">
                 {stats.map(({ value, label, icon: Icon }) => (
                   <article
                     key={label}
-                    className={`min-h-[4.9rem] rounded-lg border p-3 backdrop-blur-xl ${subtleSurfaceClass}`}
+                    className={`about-stat min-h-[4.9rem] rounded-lg border p-3 backdrop-blur-xl ${subtleSurfaceClass}`}
                   >
                     <div className="flex items-center gap-2">
                       <Icon className="h-4 w-4" />
@@ -198,7 +198,7 @@ export function AboutPanel({
             </div>
           </section>
 
-          <section className={`grid rounded-lg border backdrop-blur-xl md:grid-cols-4 ${surfaceClass}`}>
+          <section className={`about-expertise grid rounded-lg border backdrop-blur-xl md:grid-cols-4 ${surfaceClass}`}>
             {expertise.map(({ title, description, icon: Icon }, index) => (
               <article
                 key={title}
@@ -215,7 +215,7 @@ export function AboutPanel({
             ))}
           </section>
 
-          <section className={`rounded-lg border p-5 backdrop-blur-xl lg:p-5 ${surfaceClass}`}>
+          <section className={`about-journey rounded-lg border p-5 backdrop-blur-xl lg:p-5 ${surfaceClass}`}>
             <div className="grid gap-5 lg:grid-cols-[0.25fr_0.75fr] lg:items-center">
               <div className="text-left">
                 <h3 className="text-xl font-semibold tracking-tight">Mon parcours</h3>
@@ -279,7 +279,7 @@ export function AboutPanel({
         </div>
       </div>
 
-      <div className="absolute left-4 top-1/2 z-20 flex -translate-y-1/2 flex-col items-center gap-3 md:left-6">
+      <div className="absolute left-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-3 md:left-6 md:flex">
         <span className={`rounded-full border px-3 py-1.5 text-[0.62rem] uppercase tracking-[0.2em] backdrop-blur-sm ${chipClass}`}>
           Home
         </span>
