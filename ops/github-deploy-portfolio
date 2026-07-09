@@ -38,11 +38,88 @@ if ! git merge-base --is-ancestor "$deploy_sha" origin/main; then
   exit 65
 fi
 
+readonly current_sha="$(git rev-parse HEAD)"
+
 git merge --ff-only "$deploy_sha"
 docker compose -f "$compose_file" config --quiet
-COMPOSE_BAKE=false docker compose -f "$compose_file" up -d --build
 
-services=(postgres chatbot_backend strapi frontend gateway)
+changed_files="$(git diff --name-only "$current_sha" "$deploy_sha")"
+full_deploy=false
+build_services=()
+up_services=()
+services=()
+
+changes_match() {
+  local pattern="$1"
+  grep -Eq "$pattern" <<<"$changed_files"
+}
+
+append_unique() {
+  local item="$1"
+  shift
+  local -n target_array="$1"
+
+  for existing in "${target_array[@]}"; do
+    if [[ "$existing" == "$item" ]]; then
+      return
+    fi
+  done
+
+  target_array+=("$item")
+}
+
+append_build_service() {
+  local service="$1"
+  append_unique "$service" build_services
+  append_unique "$service" up_services
+  append_unique "$service" services
+}
+
+append_up_service() {
+  local service="$1"
+  append_unique "$service" up_services
+  append_unique "$service" services
+}
+
+if changes_match '^docker-compose\.prod\.yml$'; then
+  full_deploy=true
+fi
+
+if [[ "$full_deploy" == true ]]; then
+  echo "Runtime changes require a full production deploy."
+  COMPOSE_BAKE=false docker compose -f "$compose_file" up -d --build
+  services=(postgres chatbot_backend strapi frontend gateway)
+else
+  if changes_match '^frontend/'; then
+    append_build_service frontend
+  fi
+
+  if changes_match '^chatbot_backend/'; then
+    append_build_service chatbot_backend
+  fi
+
+  if changes_match '^cms/strapi/'; then
+    append_build_service strapi
+  fi
+
+  if changes_match '^gateway/'; then
+    append_up_service gateway
+  fi
+
+  if ((${#build_services[@]} > 0)); then
+    echo "Building changed services: ${build_services[*]}"
+    COMPOSE_BAKE=false docker compose -f "$compose_file" build "${build_services[@]}"
+  fi
+
+  if ((${#up_services[@]} > 0)); then
+    echo "Recreating changed services: ${up_services[*]}"
+    COMPOSE_BAKE=false docker compose -f "$compose_file" up -d --no-deps "${up_services[@]}"
+  else
+    echo "No runtime service changes detected; skipping container rebuild."
+    services=(gateway)
+  fi
+fi
+
 deadline=$((SECONDS + 240))
 
 for service in "${services[@]}"; do

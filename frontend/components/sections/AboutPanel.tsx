@@ -57,8 +57,8 @@ const expertise = [
     icon: Code2,
   },
   {
-    title: "IA pragmatique",
-    description: "Outils utiles & integres",
+    title: "Outils IA sur mesure",
+    description: "Je concois et integre l'IA",
     icon: BadgeCheck,
   },
   {
@@ -131,11 +131,12 @@ export function AboutPanel({
                 Valentin Loth
               </h2>
               <p className={`mt-5 text-base leading-7 sm:text-lg ${mutedTextClass}`}>
-                Software Engineer oriente produits web deployables.
+                Je construis des produits, pas seulement du code.
               </p>
               <p className={`mt-4 max-w-lg text-sm font-light leading-7 sm:text-base ${mutedTextClass}`}>
-                Je concois des interfaces modernes, des APIs robustes et des integrations IA utiles, avec une exigence
-                constante : livrer des solutions fiables, maintenables et pretes pour la production.
+                Issu de 42 et enrichi par une experience chez OVHcloud, j&apos;aime concevoir des applications qui
+                repondent a de vrais besoins. Du frontend aux APIs, jusqu&apos;aux integrations IA et au deploiement sur
+                Kubernetes, je cherche toujours a creer des solutions utiles, maintenables et agreables a utiliser.
               </p>
 
               <div className="mt-6 flex flex-wrap gap-3">
@@ -176,11 +177,11 @@ export function AboutPanel({
                   fill
                   sizes="(min-width: 1024px) 22rem, 20rem"
                   priority
-                  className="relative z-10 object-cover object-top drop-shadow-[0_28px_55px_rgba(0,0,0,0.48)]"
+                  className="relative z-10 object-contain object-center drop-shadow-[0_28px_55px_rgba(0,0,0,0.48)]"
                 />
               </div>
 
-              <div className="relative z-20 ml-auto mt-4 grid w-full max-w-[15rem] grid-cols-2 gap-2.5 lg:absolute lg:right-0 lg:top-12 lg:mt-0 xl:right-2">
+              <div className="relative z-20 ml-auto mt-4 grid w-full max-w-[15rem] grid-cols-2 gap-2.5 lg:absolute lg:right-0 lg:top-20 lg:mt-0 xl:right-2">
                 {stats.map(({ value, label, icon: Icon }) => (
                   <article
                     key={label}

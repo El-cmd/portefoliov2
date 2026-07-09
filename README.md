@@ -236,3 +236,57 @@ Proxy Manager peut pointer vers :
 Forward Hostname: portfolio-next-gateway
 Forward Port: 80
 ```
+
+## Deploiement automatique cible
+
+Un push sur `main` lance le workflow GitHub Actions `Deploy production`.
+Le workflow se connecte au VPS en SSH et execute :
+
+```text
+deploy <git-sha>
+```
+
+Le script cote VPS est :
+
+```text
+ops/github-deploy-portfolio
+```
+
+Avant optimisation, chaque deploiement faisait :
+
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Cette commande demandait a Docker Compose de repasser sur tous les services
+qui ont une section `build`, notamment `frontend`, `chatbot_backend` et
+`strapi`. Docker reutilise son cache, mais la passe de build reste globale.
+
+Le script compare maintenant le commit deja deploye au commit pousse, puis
+reconstruit seulement les services concernes :
+
+| Fichiers modifies | Action |
+| --- | --- |
+| `frontend/**` | rebuild + recreate `frontend` uniquement |
+| `chatbot_backend/**` | rebuild + recreate `chatbot_backend` uniquement |
+| `cms/strapi/**` | rebuild + recreate `strapi` uniquement |
+| `gateway/**` | recreate `gateway` uniquement |
+| `docker-compose.prod.yml` | full deploy de toute la stack |
+| docs, README, Makefile, fichiers CI | pas de rebuild container |
+
+Pour une modification frontend simple, le VPS fait donc l'equivalent de :
+
+```bash
+docker compose -f docker-compose.prod.yml build frontend
+docker compose -f docker-compose.prod.yml up -d --no-deps frontend
+```
+
+`--no-deps` evite de redemarrer PostgreSQL, Redis, Strapi ou le chatbot quand
+ils n'ont pas change.
+
+Apres chaque deploiement, meme cible, le script verifie les healthchecks des
+services recrees et le healthcheck de la gateway.
+
+Si le script `ops/github-deploy-portfolio` lui-meme est modifie, le changement
+est versionne avec le depot, mais il ne peut s'appliquer qu'aux deploiements
+suivants si le script deja lance etait l'ancienne version.
