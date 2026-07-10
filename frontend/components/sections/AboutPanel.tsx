@@ -223,7 +223,7 @@ export function AboutPanel({
                   Chaque etape m&apos;a permis de grandir, d&apos;apprendre et de construire des projets concrets.
                 </p>
                 <a
-                  href="/cv.pdf"
+                  href="/assets/cv-valentin-loth.pdf"
                   className={`mt-4 inline-flex h-10 items-center gap-3 rounded-lg border px-4 text-sm font-medium transition ${quietButtonClass}`}
                 >
                   Telecharger mon CV
