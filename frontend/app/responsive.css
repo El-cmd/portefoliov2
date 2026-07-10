@@ -261,7 +261,8 @@
   }
 
   .about-home-mobile {
-    bottom: max(1rem, env(safe-area-inset-bottom));
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   .hub-title {

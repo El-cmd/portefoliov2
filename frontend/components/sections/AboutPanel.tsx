@@ -310,31 +310,36 @@ export function AboutPanel({
         </button>
       </div>
 
-      <button
-        onClick={() => {
-          const rail = heroRailRef.current
-          if (!rail) return
+      <div className="about-home-mobile absolute left-4 z-30 flex flex-col items-center gap-3 md:hidden">
+        <span className={`rounded-full border px-3 py-1.5 text-[0.62rem] uppercase tracking-[0.2em] backdrop-blur-sm ${chipClass}`}>
+          Home
+        </span>
+        <button
+          onClick={() => {
+            const rail = heroRailRef.current
+            if (!rail) return
 
-          rail.scrollTo({
-            left: rail.clientWidth,
-            behavior: "smooth",
-          })
-        }}
-        aria-label="Scroll to home"
-        className={`about-home-mobile absolute left-4 z-30 md:hidden ${arrowButtonClass}`}
-      >
-        <svg
-          className="h-6 w-6"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+            rail.scrollTo({
+              left: rail.clientWidth,
+              behavior: "smooth",
+            })
+          }}
+          aria-label="Scroll to home"
+          className={arrowButtonClass}
         >
-          <path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-        </svg>
-      </button>
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+        </button>
+      </div>
     </article>
   )
 }
