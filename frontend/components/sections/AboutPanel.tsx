@@ -58,7 +58,7 @@ const expertise = [
   },
   {
     title: "Outils IA sur mesure",
-    description: "Je concois et integre l'IA",
+    description: "Je concois et integre differents modeles pour differents besoins",
     icon: BadgeCheck,
   },
   {
@@ -239,10 +239,10 @@ export function AboutPanel({
                     <Image src="/assets/42.png" alt="42 School" width={54} height={54} className="object-contain" />
                   </div>
                   <div>
-                    <h4 className="font-semibold">42 School</h4>
+                    <h4 className="font-semibold">42 School Paris</h4>
                     <p className={`mt-1 text-sm ${mutedTextClass}`}>2022 - 2025</p>
                     <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>
-                      Formation intense en autonomie. Projets en C, C++, Python, systemes et reseau.
+                      Formation Architecte du numerique - Projets en C, C++, Python, systemes et reseau.
                     </p>
                   </div>
                 </article>
@@ -252,10 +252,10 @@ export function AboutPanel({
                     <Image src="/assets/ovhlogo.jpg" alt="OVHcloud" width={54} height={54} className="object-contain" />
                   </div>
                   <div>
-                    <h4 className="font-semibold">Stage - OVHcloud</h4>
+                    <h4 className="font-semibold">Stage - OVHcloud Roubaix</h4>
                     <p className={`mt-1 text-sm ${mutedTextClass}`}>2025 - 2026</p>
                     <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>
-                      AI Engineer - Conception d&apos;un AI HUB, RAG, integrations IA et mise en production sur Kubernetes.
+                      AI Engineer - Conception d&apos;applications IA, integration de modeles et mise en production avec Kubernetes.
                     </p>
                   </div>
                 </article>
@@ -268,7 +268,7 @@ export function AboutPanel({
                     <h4 className="font-semibold">Aujourd&apos;hui</h4>
                     <p className={`mt-1 text-sm ${mutedTextClass}`}>2026 -&gt;</p>
                     <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>
-                      A la recherche de nouveaux defis pour construire des produits utiles et scalables.
+                      A la recherche de nouveaux defis.
                     </p>
                   </div>
                 </article>
