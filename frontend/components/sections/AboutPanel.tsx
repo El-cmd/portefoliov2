@@ -261,7 +261,7 @@ export function AboutPanel({
                 </article>
 
                 <article className="relative grid gap-4 text-left md:grid-cols-[5.5rem_1fr]">
-                  <div className={`relative z-10 grid h-16 w-16 place-items-center rounded-full border ${dividerClass} ${subtleSurfaceClass}`}>
+                  <div className="relative z-10 grid h-16 w-16 place-items-center rounded-full bg-white text-black">
                     <Rocket className="h-9 w-9" />
                   </div>
                   <div>
