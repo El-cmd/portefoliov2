@@ -239,8 +239,8 @@ export function AboutPanel({
                     <Image src="/assets/42.png" alt="42 School" width={54} height={54} className="object-contain" />
                   </div>
                   <div>
-                    <h4 className="font-semibold">42 School Paris</h4>
-                    <p className={`mt-1 text-sm ${mutedTextClass}`}>2022 - 2025</p>
+                    <h4 className="font-semibold">42 School</h4>
+                    <p className={`mt-1 text-sm ${mutedTextClass}`}>Paris | 2022 - 2025</p>
                     <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>
                       Formation Architecte du numerique - Projets en C, C++, Python, systemes et reseau.
                     </p>
@@ -252,10 +252,10 @@ export function AboutPanel({
                     <Image src="/assets/ovhlogo.jpg" alt="OVHcloud" width={54} height={54} className="object-contain" />
                   </div>
                   <div>
-                    <h4 className="font-semibold">Stage - OVHcloud Roubaix</h4>
-                    <p className={`mt-1 text-sm ${mutedTextClass}`}>2025 - 2026</p>
+                    <h4 className="font-semibold">Stage - OVHcloud</h4>
+                    <p className={`mt-1 text-sm ${mutedTextClass}`}>Roubaix | 2025 - 2026</p>
                     <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>
-                      AI Engineer - Conception d&apos;applications IA, integration de modeles et mise en production avec Kubernetes.
+                      AI Engineer - Applications IA & deploiement Kubernetes.
                     </p>
                   </div>
                 </article>
