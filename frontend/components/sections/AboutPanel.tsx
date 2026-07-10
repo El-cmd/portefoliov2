@@ -119,7 +119,7 @@ export function AboutPanel({
 
       <div
         data-annex-scroll
-        className="about-panel-scroll no-scrollbar relative z-10 h-full w-full max-w-7xl overflow-y-auto overscroll-contain px-5 pb-6 pt-20 sm:px-7 md:px-10 lg:px-12 lg:pt-16"
+        className="about-panel-scroll no-scrollbar relative z-10 h-full w-full max-w-7xl overflow-y-auto overscroll-contain px-5 pb-6 pt-20 sm:px-7 md:px-10 lg:px-12 lg:pt-20"
       >
         <div className="about-panel-inner mx-auto flex w-full max-w-6xl flex-col gap-4">
           <section className="about-hero relative grid min-h-[21rem] gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
