@@ -30,7 +30,7 @@ const socialLinks = [
   },
   {
     label: "LinkedIn",
-    href: "https://fr.linkedin.com/in/valentinloth",
+    href: "https://www.linkedin.com/in/loth-valentin-50378a231",
     icon: Linkedin,
   },
   {

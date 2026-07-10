@@ -135,7 +135,7 @@ export function AboutPanel({
               </p>
               <p className={`about-copy mt-4 max-w-lg text-sm font-light leading-7 sm:text-base ${mutedTextClass}`}>
                 Issu de 42 et enrichi par une experience chez OVHcloud, j&apos;aime concevoir des applications qui
-                repondent a de vrais besoins. Du frontend aux APIs, jusqu&apos;aux integrations IA et au deploiement sur
+                repondent a de vrais besoins. Du frontend aux APIs, jusqu&apos;aux integrations IA et au deploiement avec
                 Kubernetes, je cherche toujours a creer des solutions utiles, maintenables et agreables a utiliser.
               </p>
 
@@ -157,7 +157,7 @@ export function AboutPanel({
                   GitHub
                 </a>
                 <a
-                  href="https://fr.linkedin.com/in/valentinloth"
+                  href="https://www.linkedin.com/in/loth-valentin-50378a231"
                   target="_blank"
                   rel="noreferrer"
                   className={`about-link inline-flex h-11 items-center gap-2 rounded-lg border px-5 text-sm font-medium transition ${quietButtonClass}`}
@@ -220,7 +220,7 @@ export function AboutPanel({
               <div className="text-left">
                 <h3 className="text-xl font-semibold tracking-tight">Mon parcours</h3>
                 <p className={`mt-3 max-w-xs text-sm leading-6 ${mutedTextClass}`}>
-                  Chaque etape m&apos;a permis de grandir, d&apos;apprendre et de construire des projets concrets a impact.
+                  Chaque etape m&apos;a permis de grandir, d&apos;apprendre et de construire des projets concrets.
                 </p>
                 <a
                   href="/cv.pdf"
@@ -240,7 +240,7 @@ export function AboutPanel({
                   </div>
                   <div>
                     <h4 className="font-semibold">42 School</h4>
-                    <p className={`mt-1 text-sm ${mutedTextClass}`}>2022 - 2024</p>
+                    <p className={`mt-1 text-sm ${mutedTextClass}`}>2022 - 2025</p>
                     <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>
                       Formation intense en autonomie. Projets en C, C++, Python, systemes et reseau.
                     </p>
@@ -253,7 +253,7 @@ export function AboutPanel({
                   </div>
                   <div>
                     <h4 className="font-semibold">Stage - OVHcloud</h4>
-                    <p className={`mt-1 text-sm ${mutedTextClass}`}>2024 - 2025</p>
+                    <p className={`mt-1 text-sm ${mutedTextClass}`}>2025 - 2026</p>
                     <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>
                       AI Engineer - Conception d&apos;un AI HUB, RAG, integrations IA et mise en production sur Kubernetes.
                     </p>
@@ -266,7 +266,7 @@ export function AboutPanel({
                   </div>
                   <div>
                     <h4 className="font-semibold">Aujourd&apos;hui</h4>
-                    <p className={`mt-1 text-sm ${mutedTextClass}`}>2025 -&gt;</p>
+                    <p className={`mt-1 text-sm ${mutedTextClass}`}>2026 -&gt;</p>
                     <p className={`mt-2 text-sm leading-6 ${mutedTextClass}`}>
                       A la recherche de nouveaux defis pour construire des produits utiles et scalables.
                     </p>
