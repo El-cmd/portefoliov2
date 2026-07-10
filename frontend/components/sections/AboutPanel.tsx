@@ -309,6 +309,32 @@ export function AboutPanel({
           </svg>
         </button>
       </div>
+
+      <button
+        onClick={() => {
+          const rail = heroRailRef.current
+          if (!rail) return
+
+          rail.scrollTo({
+            left: rail.clientWidth,
+            behavior: "smooth",
+          })
+        }}
+        aria-label="Scroll to home"
+        className={`about-home-mobile absolute left-4 z-30 md:hidden ${arrowButtonClass}`}
+      >
+        <svg
+          className="h-6 w-6"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+      </button>
     </article>
   )
 }
