@@ -248,8 +248,8 @@ export function AboutPanel({
                 </article>
 
                 <article className="relative grid gap-4 text-left md:grid-cols-[5.5rem_1fr]">
-                  <div className={`relative z-10 grid h-16 w-16 place-items-center rounded-full border ${dividerClass} ${subtleSurfaceClass}`}>
-                    <span className="text-3xl font-black tracking-[-0.12em]">V+</span>
+                  <div className="relative z-10 grid h-16 w-16 place-items-center overflow-hidden rounded-full bg-white">
+                    <Image src="/assets/ovhlogo.jpg" alt="OVHcloud" width={54} height={54} className="object-contain" />
                   </div>
                   <div>
                     <h4 className="font-semibold">Stage - OVHcloud</h4>
