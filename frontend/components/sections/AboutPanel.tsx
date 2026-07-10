@@ -235,8 +235,8 @@ export function AboutPanel({
                 <div className={`pointer-events-none absolute left-[13%] right-[13%] top-5 hidden border-t ${dividerClass} md:block`} />
 
                 <article className="relative grid gap-4 text-left md:grid-cols-[5.5rem_1fr]">
-                  <div className={`relative z-10 grid h-16 w-16 place-items-center rounded-full border ${dividerClass} ${subtleSurfaceClass}`}>
-                    <Image src="/assets/42.png" alt="42 School" width={40} height={40} className="object-contain" />
+                  <div className="relative z-10 grid h-16 w-16 place-items-center overflow-hidden rounded-full bg-white">
+                    <Image src="/assets/42.png" alt="42 School" width={54} height={54} className="object-contain" />
                   </div>
                   <div>
                     <h4 className="font-semibold">42 School</h4>
