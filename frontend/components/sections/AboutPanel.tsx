@@ -1,6 +1,6 @@
 "use client"
 
-import type { RefObject } from "react"
+import { useState, type RefObject } from "react"
 import {
   BadgeCheck,
   BriefcaseBusiness,
@@ -11,7 +11,6 @@ import {
   Linkedin,
   Mail,
   Rocket,
-  UserRound,
 } from "lucide-react"
 import Image from "next/image"
 import FlickeringGrid from "@/components/flickering-grid"
@@ -44,9 +43,33 @@ const stats = [
     icon: BadgeCheck,
   },
   {
-    value: "0 -> 1",
-    label: "De l'idee a la prod",
-    icon: UserRound,
+    value: "Stack",
+    label: "Technologies",
+    icon: Code2,
+    action: "stack",
+  },
+]
+
+const stackGroups = [
+  {
+    title: "Frontend",
+    items: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Three.js"],
+  },
+  {
+    title: "Backend",
+    items: ["Python", "FastAPI", "Flask", "Node.js", "REST APIs"],
+  },
+  {
+    title: "IA & data",
+    items: ["RAG", "Embeddings", "FAISS", "PostgreSQL", "pgvector"],
+  },
+  {
+    title: "Ops & cloud",
+    items: ["Docker", "Kubernetes", "Helm", "Nginx", "GitHub Actions", "CI/CD"],
+  },
+  {
+    title: "CMS & infra",
+    items: ["Strapi", "Redis", "Cloudflare", "Linux VPS", "Monitoring"],
   },
 ]
 
@@ -83,6 +106,7 @@ export function AboutPanel({
   chipClass,
   arrowButtonClass,
 }: AboutPanelProps) {
+  const [isStackModalOpen, setIsStackModalOpen] = useState(false)
   const surfaceClass = isLightMode
     ? "border-black/10 bg-white/78 text-black shadow-[0_22px_80px_rgba(0,0,0,0.1)]"
     : "border-white/10 bg-[#0d0d0d]/82 text-white shadow-[0_22px_80px_rgba(0,0,0,0.42)]"
@@ -182,18 +206,37 @@ export function AboutPanel({
               </div>
 
               <div className="about-stats relative z-20 ml-auto mt-4 grid w-full max-w-[15rem] grid-cols-2 gap-2.5 lg:absolute lg:right-0 lg:top-20 lg:mt-0 xl:right-2">
-                {stats.map(({ value, label, icon: Icon }) => (
-                  <article
-                    key={label}
-                    className={`about-stat min-h-[4.9rem] rounded-lg border p-3 backdrop-blur-xl ${subtleSurfaceClass}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Icon className="h-4 w-4" />
-                      <strong className="text-lg font-medium tracking-tight sm:text-xl">{value}</strong>
-                    </div>
-                    <p className={`mt-2 text-xs leading-4 ${mutedTextClass}`}>{label}</p>
-                  </article>
-                ))}
+                {stats.map(({ value, label, icon: Icon, action }) => {
+                  if (action === "stack") {
+                    return (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => setIsStackModalOpen(true)}
+                        className={`about-stat min-h-[4.9rem] rounded-lg border p-3 text-left backdrop-blur-xl transition hover:border-white/25 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/35 ${subtleSurfaceClass}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Icon className="h-4 w-4" />
+                          <strong className="text-lg font-medium tracking-tight sm:text-xl">{value}</strong>
+                        </div>
+                        <p className={`mt-2 text-xs leading-4 ${mutedTextClass}`}>{label}</p>
+                      </button>
+                    )
+                  }
+
+                  return (
+                    <article
+                      key={label}
+                      className={`about-stat min-h-[4.9rem] rounded-lg border p-3 backdrop-blur-xl ${subtleSurfaceClass}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-4 w-4" />
+                        <strong className="text-lg font-medium tracking-tight sm:text-xl">{value}</strong>
+                      </div>
+                      <p className={`mt-2 text-xs leading-4 ${mutedTextClass}`}>{label}</p>
+                    </article>
+                  )
+                })}
               </div>
             </div>
           </section>
@@ -340,6 +383,52 @@ export function AboutPanel({
           </svg>
         </button>
       </div>
+
+      {isStackModalOpen ? (
+        <div
+          role="presentation"
+          onClick={() => setIsStackModalOpen(false)}
+          className="fixed inset-0 z-50 grid place-items-center bg-black/55 px-4 backdrop-blur-sm"
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="about-stack-title"
+            onClick={(event) => event.stopPropagation()}
+            className={`w-full max-w-2xl border p-5 sm:p-6 ${surfaceClass}`}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <h3 id="about-stack-title" className="text-lg font-semibold tracking-tight">
+                Stack technologique
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsStackModalOpen(false)}
+                className={`border px-3 py-2 text-[10px] uppercase tracking-[0.18em] transition ${strongButtonClass}`}
+              >
+                Fermer
+              </button>
+            </div>
+            <div className="mt-5 grid max-h-[62vh] gap-4 overflow-y-auto sm:grid-cols-2">
+              {stackGroups.map(({ title, items }) => (
+                <article key={title} className={`rounded-lg border p-4 ${subtleSurfaceClass}`}>
+                  <h4 className="text-sm font-semibold">{title}</h4>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {items.map((item) => (
+                      <span
+                        key={item}
+                        className={`rounded-full border px-3 py-1 text-xs ${chipClass}`}
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
+      ) : null}
     </article>
   )
 }
