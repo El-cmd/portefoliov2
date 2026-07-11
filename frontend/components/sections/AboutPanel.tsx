@@ -464,7 +464,7 @@ export function AboutPanel({
                             key={name}
                             title={name}
                             aria-label={name}
-                            className={`grid h-10 w-10 place-items-center rounded-lg border ${chipClass}`}
+                            className={`grid min-h-[4.25rem] w-16 place-items-center rounded-lg border px-2 py-2 text-center ${chipClass}`}
                           >
                             <Image
                               src={`/icons/${icon}`}
@@ -473,6 +473,7 @@ export function AboutPanel({
                               height={24}
                               className="h-6 w-6 object-contain"
                             />
+                            <span className="mt-1 text-[0.62rem] leading-tight">{name}</span>
                           </span>
                         )
                       }
