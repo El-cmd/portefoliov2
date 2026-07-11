@@ -53,23 +53,54 @@ const stats = [
 const stackGroups = [
   {
     title: "Frontend",
-    items: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Three.js"],
+    items: [
+      { name: "React", icon: "react.svg" },
+      { name: "Next.js", icon: "nextjs.svg" },
+      { name: "TypeScript", icon: "typescript.svg" },
+      { name: "Tailwind CSS", icon: "tailwindcss.svg" },
+      { name: "Three.js", icon: "threejs.svg" },
+    ],
   },
   {
     title: "Backend",
-    items: ["Python", "FastAPI", "Flask", "Node.js", "REST APIs"],
+    items: [
+      { name: "Python", icon: "python.svg" },
+      { name: "FastAPI", icon: "fastapi.svg" },
+      { name: "Flask" },
+      { name: "Node.js" },
+      { name: "REST APIs" },
+    ],
   },
   {
     title: "IA & data",
-    items: ["RAG", "Embeddings", "FAISS", "PostgreSQL", "pgvector"],
+    items: [
+      { name: "RAG" },
+      { name: "Embeddings" },
+      { name: "FAISS" },
+      { name: "PostgreSQL", icon: "postgresql.svg" },
+      { name: "pgvector" },
+    ],
   },
   {
     title: "Ops & cloud",
-    items: ["Docker", "Kubernetes", "Helm", "Nginx", "GitHub Actions", "CI/CD"],
+    items: [
+      { name: "Docker", icon: "docker.svg" },
+      { name: "Kubernetes", icon: "kubernetes.svg" },
+      { name: "Helm", icon: "helm.svg" },
+      { name: "Nginx", icon: "nginx.svg" },
+      { name: "GitHub Actions", icon: "githubactions.svg" },
+      { name: "CI/CD" },
+    ],
   },
   {
     title: "CMS & infra",
-    items: ["Strapi", "Redis", "Cloudflare", "Linux VPS", "Monitoring"],
+    items: [
+      { name: "Strapi" },
+      { name: "Redis" },
+      { name: "Cloudflare" },
+      { name: "Linux VPS", icon: "linux.svg" },
+      { name: "Monitoring" },
+    ],
   },
 ]
 
@@ -213,7 +244,7 @@ export function AboutPanel({
                         key={label}
                         type="button"
                         onClick={() => setIsStackModalOpen(true)}
-                        className="about-stat min-h-[4.9rem] rounded-lg border border-white bg-white p-3 text-left text-black shadow-[0_16px_55px_rgba(0,0,0,0.28)] transition hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-white/50"
+                        className="about-stat group min-h-[4.9rem] rounded-lg border border-white bg-white p-3 text-left text-black shadow-[0_16px_55px_rgba(0,0,0,0.28)] transition hover:border-white hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50"
                       >
                         <div className="flex items-center gap-2">
                           <Icon className="h-4 w-4" />
@@ -222,7 +253,7 @@ export function AboutPanel({
                             &gt;
                           </span>
                         </div>
-                        <p className="mt-2 text-xs leading-4 text-neutral-700">{label}</p>
+                        <p className="mt-2 text-xs leading-4 text-neutral-700 transition group-hover:text-neutral-300">{label}</p>
                       </button>
                     )
                   }
@@ -426,14 +457,36 @@ export function AboutPanel({
                 >
                   <h4 className="text-sm font-semibold">{title}</h4>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {items.map((item) => (
-                      <span
-                        key={item}
-                        className={`rounded-full border px-3 py-1 text-xs ${chipClass}`}
-                      >
-                        {item}
-                      </span>
-                    ))}
+                    {items.map(({ name, icon }) => {
+                      if (icon) {
+                        return (
+                          <span
+                            key={name}
+                            title={name}
+                            aria-label={name}
+                            className={`grid h-10 w-10 place-items-center rounded-lg border ${chipClass}`}
+                          >
+                            <Image
+                              src={`/icons/${icon}`}
+                              alt=""
+                              width={24}
+                              height={24}
+                              className="h-6 w-6 object-contain"
+                            />
+                          </span>
+                        )
+                      }
+
+                      return (
+                        <span
+                          key={name}
+                          title={name}
+                          className={`rounded-full border px-3 py-1 text-xs ${chipClass}`}
+                        >
+                          {name}
+                        </span>
+                      )
+                    })}
                   </div>
                 </article>
               ))}
