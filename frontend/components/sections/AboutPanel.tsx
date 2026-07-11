@@ -213,13 +213,16 @@ export function AboutPanel({
                         key={label}
                         type="button"
                         onClick={() => setIsStackModalOpen(true)}
-                        className={`about-stat min-h-[4.9rem] rounded-lg border p-3 text-left backdrop-blur-xl transition hover:border-white/25 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/35 ${subtleSurfaceClass}`}
+                        className="about-stat min-h-[4.9rem] rounded-lg border border-white bg-white p-3 text-left text-black shadow-[0_16px_55px_rgba(0,0,0,0.28)] transition hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-white/50"
                       >
                         <div className="flex items-center gap-2">
                           <Icon className="h-4 w-4" />
                           <strong className="text-lg font-medium tracking-tight sm:text-xl">{value}</strong>
+                          <span className="ml-auto text-lg leading-none" aria-hidden="true">
+                            &gt;
+                          </span>
                         </div>
-                        <p className={`mt-2 text-xs leading-4 ${mutedTextClass}`}>{label}</p>
+                        <p className="mt-2 text-xs leading-4 text-neutral-700">{label}</p>
                       </button>
                     )
                   }
@@ -395,7 +398,11 @@ export function AboutPanel({
             aria-modal="true"
             aria-labelledby="about-stack-title"
             onClick={(event) => event.stopPropagation()}
-            className={`w-full max-w-2xl border p-5 sm:p-6 ${surfaceClass}`}
+            className={`w-full max-w-2xl border p-5 sm:p-6 ${
+              isLightMode
+                ? "border-black/10 bg-white text-black shadow-[0_22px_80px_rgba(0,0,0,0.18)]"
+                : "border-white/10 bg-[#050505] text-white shadow-[0_22px_80px_rgba(0,0,0,0.65)]"
+            }`}
           >
             <div className="flex items-start justify-between gap-4">
               <h3 id="about-stack-title" className="text-lg font-semibold tracking-tight">
@@ -411,7 +418,12 @@ export function AboutPanel({
             </div>
             <div className="mt-5 grid max-h-[62vh] gap-4 overflow-y-auto sm:grid-cols-2">
               {stackGroups.map(({ title, items }) => (
-                <article key={title} className={`rounded-lg border p-4 ${subtleSurfaceClass}`}>
+                <article
+                  key={title}
+                  className={`rounded-lg border p-4 ${
+                    isLightMode ? "border-black/10 bg-neutral-50" : "border-white/10 bg-[#111]"
+                  }`}
+                >
                   <h4 className="text-sm font-semibold">{title}</h4>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {items.map((item) => (
