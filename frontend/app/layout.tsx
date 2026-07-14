@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   title: "Valentin Loth",
   description: "Portfolio principal de Valentin Loth.",
   generator: "v0.app",
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 }
 
 export default function RootLayout({
