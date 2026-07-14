@@ -24,10 +24,12 @@ type ChatSectionProps = {
   chatRateLimitRetryAfterSeconds: number | null
   handleChatSubmit: (event: FormEvent<HTMLFormElement>) => void
   onSelectQuestion: (question: string) => void
+  onScrollHome: () => void
   maxChatMessageLength: number
   gridColor: string
   isLightMode: boolean
   chipClass: string
+  arrowButtonClass: string
   labelTextClass: string
   chatBubbleBaseClass: string
   assistantBubbleClass: string
@@ -45,10 +47,12 @@ export function ChatSection({
   chatRateLimitRetryAfterSeconds,
   handleChatSubmit,
   onSelectQuestion,
+  onScrollHome,
   maxChatMessageLength,
   gridColor,
   isLightMode,
   chipClass,
+  arrowButtonClass,
   labelTextClass,
   chatBubbleBaseClass,
   assistantBubbleClass,
@@ -74,6 +78,30 @@ export function ChatSection({
         hoverOpacity={0.18}
         hoverScale={1.28}
       />
+
+      <div className="absolute left-4 top-20 z-20 flex flex-col items-center gap-3 md:left-8 md:top-24">
+        <span className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.22em] backdrop-blur-sm ${chipClass}`}>
+          Home
+        </span>
+        <button
+          type="button"
+          onClick={onScrollHome}
+          aria-label="Scroll to home"
+          className={arrowButtonClass}
+        >
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+          </svg>
+        </button>
+      </div>
 
       <div className="relative z-10 mx-auto flex h-full max-w-5xl flex-col overflow-hidden pt-20 md:pt-24">
         <div className="shrink-0 text-center">

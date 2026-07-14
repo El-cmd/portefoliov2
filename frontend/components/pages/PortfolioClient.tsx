@@ -224,6 +224,21 @@ export function PortfolioClient({ initialProjects, initialProjectsError }: Portf
     await sendChatMessage(chatInput)
   }
 
+  const scrollToHome = () => {
+    pageScrollRef.current?.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+
+    const rail = heroRailRef.current
+    if (!rail) return
+
+    rail.scrollTo({
+      left: rail.clientWidth,
+      behavior: "smooth",
+    })
+  }
+
   useEffect(() => {
     const rail = heroRailRef.current
     if (!rail) return
@@ -408,10 +423,12 @@ export function PortfolioClient({ initialProjects, initialProjectsError }: Portf
           chatRateLimitRetryAfterSeconds={chatRateLimitRetryAfterSeconds}
           handleChatSubmit={handleChatSubmit}
           onSelectQuestion={sendChatMessage}
+          onScrollHome={scrollToHome}
           maxChatMessageLength={MAX_CHAT_MESSAGE_LENGTH}
           gridColor={gridColor}
           isLightMode={isLightMode}
           chipClass={chipClass}
+          arrowButtonClass={arrowButtonClass}
           labelTextClass={labelTextClass}
           chatBubbleBaseClass={chatBubbleBaseClass}
           assistantBubbleClass={assistantBubbleClass}
