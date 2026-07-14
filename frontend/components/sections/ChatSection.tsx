@@ -7,11 +7,10 @@ import FlickeringGrid from "@/components/flickering-grid"
 import type { ChatMessage } from "@/components/sections/types"
 
 const suggestedQuestions = [
-  "Quels sont tes projets principaux ?",
-  "Quelles sont tes competences techniques ?",
-  "Peux-tu me presenter ton experience ?",
+  "Qui es-tu ?",
   "Comment te contacter ?",
-  "Es-tu disponible pour une mission ?",
+  "Quels sont tes reseaux sociaux ?",
+  "Quelles sont tes skills ?",
 ]
 
 type ChatSectionProps = {
