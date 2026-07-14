@@ -52,54 +52,71 @@ const stats = [
 
 const stackGroups = [
   {
+    title: "Programming",
+    items: [
+      { name: "Python", icon: "python.svg" },
+      { name: "TypeScript", icon: "typescript.svg" },
+      { name: "JavaScript", icon: "javascript.svg" },
+      { name: "C", icon: "c.svg" },
+      { name: "C++", icon: "cplusplus.svg" },
+      { name: "SQL" },
+    ],
+  },
+  {
     title: "Frontend",
     items: [
       { name: "React", icon: "react.svg" },
       { name: "Next.js", icon: "nextjs.svg" },
-      { name: "TypeScript", icon: "typescript.svg" },
       { name: "Tailwind CSS", icon: "tailwindcss.svg" },
       { name: "Three.js", icon: "threejs.svg" },
+      { name: "HTML5", icon: "html5.svg" },
+      { name: "CSS3", icon: "css3.svg" },
     ],
   },
   {
     title: "Backend",
     items: [
-      { name: "Python", icon: "python.svg" },
       { name: "FastAPI", icon: "fastapi.svg" },
       { name: "Flask" },
       { name: "Node.js" },
       { name: "REST APIs" },
+      { name: "Pytest" },
+      { name: "Django", icon: "django.svg" },
     ],
   },
   {
-    title: "IA & data",
+    title: "Data & IA",
     items: [
       { name: "RAG" },
-      { name: "Embeddings" },
+      { name: "MCP" },
       { name: "FAISS" },
-      { name: "PostgreSQL", icon: "postgresql.svg" },
       { name: "pgvector" },
+      { name: "PostgreSQL", icon: "postgresql.svg" },
+      { name: "LangChain" },
+      { name: "LangGraph" },
     ],
   },
   {
-    title: "Ops & cloud",
+    title: "DevOps & cloud",
     items: [
       { name: "Docker", icon: "docker.svg" },
       { name: "Kubernetes", icon: "kubernetes.svg" },
       { name: "Helm", icon: "helm.svg" },
-      { name: "Nginx", icon: "nginx.svg" },
       { name: "GitHub Actions", icon: "githubactions.svg" },
-      { name: "CI/CD" },
+      { name: "Nginx", icon: "nginx.svg" },
+      { name: "Linux", icon: "linux.svg" },
+      { name: "S3" },
     ],
   },
   {
-    title: "CMS & infra",
+    title: "Infrastructure & tools",
     items: [
-      { name: "Strapi" },
-      { name: "Redis" },
+      { name: "Git", icon: "git.svg" },
       { name: "Cloudflare" },
-      { name: "Linux VPS", icon: "linux.svg" },
-      { name: "Monitoring" },
+      { name: "Redis" },
+      { name: "Strapi" },
+      { name: "Backstage" },
+      { name: "GitHub" },
     ],
   },
 ]
@@ -429,13 +446,13 @@ export function AboutPanel({
             aria-modal="true"
             aria-labelledby="about-stack-title"
             onClick={(event) => event.stopPropagation()}
-            className={`w-full max-w-2xl border p-5 sm:p-6 ${
+            className={`flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden border p-5 sm:p-6 ${
               isLightMode
                 ? "border-black/10 bg-white text-black shadow-[0_22px_80px_rgba(0,0,0,0.18)]"
                 : "border-white/10 bg-[#050505] text-white shadow-[0_22px_80px_rgba(0,0,0,0.65)]"
             }`}
           >
-            <div className="flex items-start justify-between gap-4">
+            <div className="shrink-0 flex items-start justify-between gap-4">
               <h3 id="about-stack-title" className="text-lg font-semibold tracking-tight">
                 Stack technologique
               </h3>
@@ -447,7 +464,7 @@ export function AboutPanel({
                 Fermer
               </button>
             </div>
-            <div className="mt-5 grid max-h-[62vh] gap-4 overflow-y-auto sm:grid-cols-2">
+            <div className="mt-5 grid min-h-0 gap-4 overflow-y-auto overscroll-contain pr-2 sm:grid-cols-2">
               {stackGroups.map(({ title, items }) => (
                 <article
                   key={title}
