@@ -79,9 +79,9 @@ export function ChatSection({
         hoverScale={1.28}
       />
 
-      <div className="relative z-10 mx-auto flex h-full max-w-5xl flex-col overflow-hidden pt-20 md:pt-24">
+      <div className="relative z-10 mx-auto flex h-full max-w-5xl flex-col overflow-hidden pt-12 md:pt-16">
         <div className="shrink-0 text-center">
-          <div className="mb-8 flex flex-col items-center gap-3 md:mb-10">
+          <div className="mb-6 flex flex-col items-center gap-3 md:mb-8">
             <span className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.22em] backdrop-blur-sm ${chipClass}`}>
               Home
             </span>
