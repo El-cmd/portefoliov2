@@ -9,14 +9,30 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
 })
 
+const siteTitle = "Valentin LOTH | Software Engineer | Full Stack | Portfolio de mes Skills"
+const siteDescription = "Portfolio de Valentin Loth : projets, skills, stack technique et assistant IA."
+
 export const metadata: Metadata = {
-  title: "Valentin Loth",
-  description: "Portfolio principal de Valentin Loth.",
+  metadataBase: new URL("https://vloth.tech"),
+  title: siteTitle,
+  description: siteDescription,
   generator: "v0.app",
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
     apple: "/favicon.png",
+  },
+  openGraph: {
+    title: siteTitle,
+    description: siteDescription,
+    url: "https://vloth.tech",
+    siteName: "Valentin Loth",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: siteTitle,
+    description: siteDescription,
   },
 }
 
