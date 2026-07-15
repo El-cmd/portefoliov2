@@ -11,6 +11,7 @@ const spaceGrotesk = Space_Grotesk({
 
 const siteTitle = "Valentin LOTH | Software Engineer | Full Stack | Portfolio de mes Skills"
 const siteDescription = "Portfolio de Valentin Loth : projets, skills, stack technique et assistant IA."
+const siteImage = "/og-portfolio-20260715.png"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vloth.tech"),
@@ -27,12 +28,21 @@ export const metadata: Metadata = {
     description: siteDescription,
     url: "https://vloth.tech",
     siteName: "Valentin Loth",
+    images: [
+      {
+        url: siteImage,
+        width: 1919,
+        height: 933,
+        alt: "Accueil du portfolio de Valentin Loth",
+      },
+    ],
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
+    images: [siteImage],
   },
 }
 
